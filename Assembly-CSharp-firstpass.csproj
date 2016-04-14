@@ -6,7 +6,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{F8F3C39B-16E5-F75A-63AE-8317E1A03C86}</ProjectGuid>
+    <ProjectGuid>{78DE7086-24D0-043B-E8A6-89786E9DA69B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp-firstpass</AssemblyName>
@@ -63,22 +63,22 @@
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityPurchasing/UnityEngine.Purchasing.dll</HintPath>
  </Reference>
  <Reference Include="Common">
- <HintPath>/Users/mohammed/Projects/android_iap/Assets/Plugins/UnityPurchasing/Bin/Common.dll</HintPath>
+ <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityPurchasing/Bin/Common.dll</HintPath>
  </Reference>
  <Reference Include="Editor">
- <HintPath>/Users/mohammed/Projects/android_iap/Assets/Plugins/UnityPurchasing/Bin/Editor.dll</HintPath>
+ <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityPurchasing/Bin/Editor.dll</HintPath>
  </Reference>
  <Reference Include="Security">
- <HintPath>/Users/mohammed/Projects/android_iap/Assets/Plugins/UnityPurchasing/Bin/Security.dll</HintPath>
+ <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityPurchasing/Bin/Security.dll</HintPath>
  </Reference>
  <Reference Include="Stores">
- <HintPath>/Users/mohammed/Projects/android_iap/Assets/Plugins/UnityPurchasing/Bin/Stores.dll</HintPath>
+ <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityPurchasing/Bin/Stores.dll</HintPath>
  </Reference>
  <Reference Include="Apple">
- <HintPath>/Users/mohammed/Projects/android_iap/Assets/Plugins/UnityPurchasing/Bin/Apple/Apple.dll</HintPath>
+ <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityPurchasing/Bin/Apple/Apple.dll</HintPath>
  </Reference>
  <Reference Include="winrt">
- <HintPath>/Users/mohammed/Projects/android_iap/Assets/Plugins/UnityPurchasing/winrt/winrt.dll</HintPath>
+ <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityPurchasing/winrt/winrt.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

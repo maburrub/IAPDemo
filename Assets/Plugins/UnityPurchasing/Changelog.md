@@ -1,3 +1,40 @@
+## [1.4.1] - 2016-4-12
+### Fixed
+- Amazon stores - "App failed to call Purchasing Fullfillment" error caused by Unity IAP misuse of Amazon's notifyFulfillment mechanism.
+
+### Added
+- Editor API call for toggling between Android billing platforms in build scripts; UnityPurchasingEditor.TargetAndroidStore(AndroidStore). See below for usage.
+
+```csharp
+using UnityEngine;
+using UnityEngine.Purchasing;
+using UnityEditor;
+
+// A sample Editor script.
+public class MyEditorScript {
+	void AnEditorMethod() {
+		// Set the store to Google Play.
+		UnityPurchasingEditor.TargetAndroidStore(AndroidStore.GooglePlay);
+	}
+}
+```
+
+## [1.4.0] - 2016-4-5
+### Added
+- Amazon Apps & Amazon underground support. Preliminary documentation is available [here](https://docs.google.com/document/d/1QxHRo7DdjwNIUAm0Gb4J3EW3k1vODJ8dGdZZfJwetYk/edit?ts=56f97483).
+
+## [1.3.2] - 2016-4-4
+### Fixed
+- Apple stores; AppleReceiptValidator not parsing AppleInAppPurchaseReceipt subscriptionExpirationDate and cancellationDate fields.
+
+## [1.3.1] - 2016-3-10
+### Changed
+- Google Play - Google's auto generated IInAppBillingService types have been moved to a separate Android archive; GoogleAIDL. If other plugins define IInAppBillingService, generating duplicate class errors when building for Android, you can delete this AAR to resolve them.
+
+## [1.3.0] - 2016-3-3
+### Added
+- Receipt validation & parsing library for Google Play and Apple stores. Preliminary documentation can be found [here](https://docs.google.com/document/d/1dJzeoGPeUIUetvFCulsvRz1TwRNOcJzwTDVf23gk8Rg/edit#)
+
 ## [1.2.4] - 2016-2-26
 ### Fixed
 - Demo scene error when running on IL2CPP.
