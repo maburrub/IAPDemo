@@ -130,7 +130,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 				}
 			} catch (IAPSecurityException) {
 				Debug.Log("-------------- Invalid receipt, not unlocking content");
-				return PurchaseProcessingResult.Complete;
+				return PurchaseProcessingResult.Pending;
 			}
 		}
 		#endif
@@ -138,7 +138,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// You should unlock the content here.
 
 		// Indicate we have handled this purchase, we will not be informed of it again.x
-		return PurchaseProcessingResult.Complete;
+		return PurchaseProcessingResult.Pending;
 	}
 
 	/// <summary>
