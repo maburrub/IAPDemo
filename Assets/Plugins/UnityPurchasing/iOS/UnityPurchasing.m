@@ -64,7 +64,7 @@ int delayInSeconds = 2;
         }
     }
     
-    UnityPurchasingLog(@"No App Receipt found!");
+    UnityPurchasingLog(@"No App Receipt found");
     return @"";
 }
 
@@ -168,7 +168,7 @@ int delayInSeconds = 2;
 -(void) requestProducts:(NSSet*)paramIds
 {
     productIds = paramIds;
-    UnityPurchasingLog(@"RequestProducts:%@", productIds);
+    UnityPurchasingLog(@"Requesting %lu products", (unsigned long) [productIds count]);
     if ([SKPaymentQueue canMakePayments]) {
         // Start an immediate poll.
         [self initiateProductPoll:0];
@@ -232,7 +232,7 @@ int delayInSeconds = 2;
 // Store Kit returns a response from an SKProductsRequest.
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response {
     
-    UnityPurchasingLog(@"ProductsRequest:didReceiveResponse:%@", response.products);
+    UnityPurchasingLog(@"Received %lu products", (unsigned long) [response.products count]);
     // Add the retrieved products to our set of valid products.
     NSDictionary* fetchedProducts = [NSDictionary dictionaryWithObjects:response.products forKeys:[response.products valueForKey:@"productIdentifier"]];
     [validProducts addEntriesFromDictionary:fetchedProducts];
