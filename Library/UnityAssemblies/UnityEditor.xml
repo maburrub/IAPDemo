@@ -3100,7 +3100,7 @@ Amount of compression. The value roughly corresponds to the ratio between the re
     </member>
     <member name="F:UnityEditor.BuildOptions.AcceptExternalModificationsToPlayer">
       <summary>
-        <para>Used when building Xcode (iPhone) or Eclipse (Android) projects.</para>
+        <para>Used when building Xcode (iOS) or Eclipse (Android) projects.</para>
       </summary>
     </member>
     <member name="F:UnityEditor.BuildOptions.AllowDebugging">

@@ -1,3 +1,16 @@
+## [1.5.0] - 2016-5-10
+### Added
+- Amazon stores - Added NotifyUnableToFulfillUnavailableProduct(string transactionID) to IAmazonExtensions.
+
+You should use this method if your App cannot fulfill an Amazon purchase and you need to call [notifyFulfillment](https://developer.amazon.com/public/apis/earn/in-app-purchasing/docs-v2/implementing-iap-2.0) method with a FulfillmentResult of UNAVAILABLE.
+
+### Fixed
+- Google Play - purchase failure event not firing if the Google Play purchase dialog was destroyed when backgrounding and relaunching the App.
+
+### Changed
+- Updated to V2.0.61 of Amazon's IAP API.
+- Apple stores, Google Play - removed logging of products details on startup.
+
 ## [1.4.1] - 2016-4-12
 ### Fixed
 - Amazon stores - "App failed to call Purchasing Fullfillment" error caused by Unity IAP misuse of Amazon's notifyFulfillment mechanism.
