@@ -188,7 +188,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// You would remove this before building your release package.
 		builder.Configure<IMicrosoftConfiguration>().useMockBillingSystem = false;
 		//builder.Configure<ISamsungAppsConfiguration> ().mode = SamsungAppsMode.AlwaysSucceed;
-		builder.Configure<ISamsungAppsConfiguration> ().mode = SamsungAppsMode.AlwaysFail;
+		//builder.Configure<ISamsungAppsConfiguration> ().mode = SamsungAppsMode.AlwaysFail;
 
 		builder.Configure<IGooglePlayConfiguration>().SetPublicKey("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2O/9/H7jYjOsLFT/uSy3ZEk5KaNg1xx60RN7yWJaoQZ7qMeLy4hsVB3IpgMXgiYFiKELkBaUEkObiPDlCxcHnWVlhnzJBvTfeCPrYNVOOSJFZrXdotp5L0iS2NVHjnllM+HA1M0W2eSNjdYzdLmZl1bxTpXa4th+dVli9lZu7B7C2ly79i/hGTmvaClzPBNyX+Rtj7Bmo336zh2lYbRdpD5glozUq+10u91PMDPH+jqhx10eyZpiapr8dFqXl5diMiobknw9CgcjxqMTVBQHK6hS0qYKPmUDONquJn280fBs1PTeA6NMG03gb9FLESKFclcuEZtvM8ZwMMRxSLA9GwIDAQAB");
     //builder.Configure<ITizenStoreConfiguration>().SetGroupId("100000070614");
@@ -204,8 +204,8 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.6", AppleAppStore.Name},
 				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.7", MacAppStore.Name},
 				{"com.eight.bit.avenue.amorcam.100coins.2", GooglePlay.Name},
-				{"com.eight.bit.avenue.100coins.1", WindowsStore.Name},
-				{"100.gold.coins", SamsungApps.Name}
+				{"com.eight.bit.avenue.100coins.1", WindowsStore.Name}//,
+				//{"100.gold.coins", SamsungApps.Name}
 			});
 
 		builder.AddProduct("sword", ProductType.NonConsumable, new IDs
@@ -213,16 +213,16 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 				{"com.unity3d.unityiap.unityiapdemo.sword.6", AppleAppStore.Name},
 				{"com.unity3d.unityiap.unityiapdemo.sword.7", MacAppStore.Name},
 				{"com.eight.bit.avenue.amorcam.sword.2", GooglePlay.Name},
-				{"com.eight.bit.avenue.sword.1", WindowsStore.Name},
-				{"sword", SamsungApps.Name}
+				{"com.eight.bit.avenue.sword.1", WindowsStore.Name}//,
+				//{"sword", SamsungApps.Name}
 			});
 		builder.AddProduct("subscription", ProductType.Subscription, new IDs
 			{
 				{"com.unity3d.unityiap.unityiapdemo.subscription", AppleAppStore.Name},
 				{"com.unity3d.unityiap.unityiapdemo.subscription.7", MacAppStore.Name},
 				{"com.eight.bit.avenue.amorcam.subscription.2", GooglePlay.Name},
-				{"com.eight.bit.avenue.subscription.1", WindowsStore.Name},
-				{"subscription", SamsungApps.Name}
+				{"com.eight.bit.avenue.subscription.1", WindowsStore.Name}//,
+				//{"subscription", SamsungApps.Name}
 			});
 		
 
