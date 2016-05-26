@@ -200,7 +200,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 			{
 				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.6", AppleAppStore.Name},
 				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.7", MacAppStore.Name},
-				{"com.eight.bit.avenue.amorcam.100coins.2", GooglePlay.Name},
+				{"com.eight.bit.avenue.amorcam.100coins.unknown", GooglePlay.Name},
 				{"com.eight.bit.avenue.100coins.1", WindowsStore.Name}//,
 				//{"100.gold.coins", SamsungApps.Name}
 			});
