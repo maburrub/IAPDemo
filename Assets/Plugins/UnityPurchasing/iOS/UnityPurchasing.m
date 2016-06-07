@@ -169,13 +169,8 @@ int delayInSeconds = 2;
 {
     productIds = paramIds;
     UnityPurchasingLog(@"Requesting %lu products", (unsigned long) [productIds count]);
-    if ([SKPaymentQueue canMakePayments]) {
-        // Start an immediate poll.
-        [self initiateProductPoll:0];
-    } else {
-        // Send an InitializationFailureReason.
-        [self UnitySendMessage:@"OnSetupFailed" payload:@"PurchasingUnavailable" ];
-    }
+    // Start an immediate poll.
+    [self initiateProductPoll:0];
 }
 
 // Execute a product metadata retrieval request via GCD.
