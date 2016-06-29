@@ -9,6 +9,7 @@ Debug.Log(builder.Configure<IAndroidStoreSelection>().androidStore);
 ```
 
 ### Fixed
+- Google Play - sandbox purchases. In Google's sandbox Unity IAP now uses Google's purchase token instead of Order ID to represent transaction IDs.
 - iOS not initializing when IAP purchase restrictions are active. IAP will now initialise if restrictions are active, enabling browsing of IAP metadata, although purchases will fail until restrictions are disabled.
 - Instantiating multiple ConfigurationBuilders causing purchasing to break on Google Play & iOS.
 
