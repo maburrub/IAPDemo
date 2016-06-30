@@ -218,7 +218,24 @@ int delayInSeconds = 2;
 // and maintained for the life of the app, since transactions can
 // be delivered at any time.
 -(void) addTransactionObserver {
-    [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+    SKPaymentQueue* defaultQueue = [SKPaymentQueue defaultQueue];
+
+    // Detect whether an existing transaction observer is in place.
+    // An existing observer will have processed any transactions already pending,
+    // so when we add our own storekit will not call our updatedTransactions handler.
+    // We workaround this by explicitly processing any existing transactions if they exist.
+    BOOL processExistingTransactions = false;
+    if (defaultQueue != nil && defaultQueue.transactions != nil)
+    {
+        if ([[defaultQueue transactions] count] > 0) {
+            processExistingTransactions = true;
+        }
+    }
+
+    [defaultQueue addTransactionObserver:self];
+    if (processExistingTransactions) {
+        [self paymentQueue:defaultQueue updatedTransactions:defaultQueue.transactions];
+    }
 }
 
 #pragma mark -
