@@ -200,7 +200,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 			{
 				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.6", AppleAppStore.Name},
 				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.7", MacAppStore.Name},
-				{"com.eight.bit.avenue.amorcam.100coins.2", GooglePlay.Name},
+				{"com.eight.bit.avenue.amorcam.100coins.3", GooglePlay.Name},
 				{"com.eight.bit.avenue.100coins.1", WindowsStore.Name}//,
 				//{"100.gold.coins", SamsungApps.Name}
 			});
@@ -209,7 +209,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 			{
 				{"com.unity3d.unityiap.unityiapdemo.sword.6", AppleAppStore.Name},
 				{"com.unity3d.unityiap.unityiapdemo.sword.7", MacAppStore.Name},
-				{"com.eight.bit.avenue.amorcam.sword.2", GooglePlay.Name},
+				{"com.eight.bit.avenue.amorcam.sword.3", GooglePlay.Name},
 				{"com.eight.bit.avenue.sword.1", WindowsStore.Name}//,
 				//{"sword", SamsungApps.Name}
 			});
@@ -217,7 +217,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 			{
 				{"com.unity3d.unityiap.unityiapdemo.subscription", AppleAppStore.Name},
 				{"com.unity3d.unityiap.unityiapdemo.subscription.7", MacAppStore.Name},
-				{"com.eight.bit.avenue.amorcam.subscription.2", GooglePlay.Name},
+				{"com.eight.bit.avenue.amorcam.subscription.3", GooglePlay.Name},
 				{"com.eight.bit.avenue.subscription.1", WindowsStore.Name}//,
 				//{"subscription", SamsungApps.Name}
 			});
