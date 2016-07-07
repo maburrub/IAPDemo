@@ -1,0 +1,12 @@
+Here is how to verify this test case:
+1. launch the app
+2. buy a product (consumable)
+3. the code returns pending
+4. kill the app
+5. relaunch the app
+6. You gonna get prompted for a password for ever as long as you keep relaunching
+   because the process purchase function is called but it is still returning pending
+   unless you uninstall the app and reinstall another one that calls complete instead
+   of pending.
+7. Before the fix, after relaunch the app never call process purchase
+
