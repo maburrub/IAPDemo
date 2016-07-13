@@ -196,32 +196,14 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// iOS stores.
 		// So on the Mac App store our products have different identifiers,
 		// and we tell Unity IAP this by using the IDs class.
-		builder.AddProduct("coins", ProductType.Consumable, new IDs
-			{
-				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.6", AppleAppStore.Name},
-				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.7", MacAppStore.Name},
-				{"com.eight.bit.avenue.amorcam.100coins.3", GooglePlay.Name},
-				{"com.eight.bit.avenue.100coins.1", WindowsStore.Name}//,
-				//{"100.gold.coins", SamsungApps.Name}
-			});
 
-		builder.AddProduct("sword", ProductType.NonConsumable, new IDs
+		builder.AddProduct("sword", ProductType.Consumable, new IDs
 			{
 				{"com.unity3d.unityiap.unityiapdemo.sword.6", AppleAppStore.Name},
 				{"com.unity3d.unityiap.unityiapdemo.sword.7", MacAppStore.Name},
 				{"com.eight.bit.avenue.amorcam.sword.3", GooglePlay.Name},
-				{"com.eight.bit.avenue.sword.1", WindowsStore.Name}//,
-				//{"sword", SamsungApps.Name}
+				{"com.eight.bit.avenue.sword.1", WindowsStore.Name}
 			});
-		builder.AddProduct("subscription", ProductType.Subscription, new IDs
-			{
-				{"com.unity3d.unityiap.unityiapdemo.subscription", AppleAppStore.Name},
-				{"com.unity3d.unityiap.unityiapdemo.subscription.7", MacAppStore.Name},
-				{"com.eight.bit.avenue.amorcam.subscription.3", GooglePlay.Name},
-				{"com.eight.bit.avenue.subscription.1", WindowsStore.Name}//,
-				//{"subscription", SamsungApps.Name}
-			});
-		
 
 		#if RECEIPT_VALIDATION
 		validator = new CrossPlatformValidator(GooglePlayTangle.Data(), AppleTangle.Data(), Application.bundleIdentifier);
