@@ -1,4 +1,8 @@
-## [1.6.0] - ????
+## [1.6.1] - ????
+### Fixed
+- Google Play - fixed non fatal 'IllegalArgumentException: Receiver not registered' warning appearing in crashlogs.
+
+## [1.6.0] - 2016-7-7
 ### Added
 - Support for redeeming [Google Play promo codes](https://developer.android.com/google/play/billing/billing_promotions.html) for IAPs.
 - IAndroidStoreSelection extended configuration for accessing the currently selected Android store.
