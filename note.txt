@@ -1,0 +1,3 @@
+In Awake method, at the bottom, calling the initialize twice as follows:
+
+UnityPurchasing.Initialize(this, builder);

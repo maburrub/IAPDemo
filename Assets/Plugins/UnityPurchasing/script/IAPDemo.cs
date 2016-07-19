@@ -229,7 +229,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 
 		// Now we're ready to initialize Unity IAP.
 		UnityPurchasing.Initialize(this, builder);
-		//UnityPurchasing.Initialize(this, builder);
+		UnityPurchasing.Initialize(this, builder);
 	}
 
 	/// <summary>
