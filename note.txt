@@ -1,0 +1,6 @@
+Returning pending at the end of ProcessPurchase method:
+
+// Indicate we have handled this purchase, we will not be informed of it again.x
+Debug.Log("-------------- RETURNING PENDING --------------");
+return PurchaseProcessingResult.Pending;
+
