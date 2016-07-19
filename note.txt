@@ -1,0 +1,12 @@
+Modifying the IAPDemo.cs as follows:
+
+builder.AddProduct("sword", ProductType.Consumable, new IDs
+{
+                  {"com.unity3d.unityiap.unityiapdemo.sword.6", AppleAppStore.Name},
+                  {"com.unity3d.unityiap.unityiapdemo.sword.7", MacAppStore.Name},
+                  {"com.eight.bit.avenue.amorcam.sword.3", GooglePlay.Name},
+                  {"com.eight.bit.avenue.sword.1", WindowsStore.Name}
+});
+
+
+We are declaring the non-conumable sord.3 as consumable so that we can repeat the test case 
