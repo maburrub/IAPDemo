@@ -137,6 +137,8 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 
 		// You should unlock the content here.
 
+		Debug.Log("-------------- ProcessPurchase was called ----------------");
+	
 		// Indicate we have handled this purchase, we will not be informed of it again.x
 		return PurchaseProcessingResult.Complete;
 	}

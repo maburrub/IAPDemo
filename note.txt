@@ -1,0 +1,11 @@
+We are commenting the following line in IAPDemo.cs
+
+//{"com.unity3d.unityiap.unityiapdemo.100goldcoins.6", AppleAppStore.Name},
+
+The app should consume it anyway even though it is not defined because it is pending. This product is made pending by building the app another time and return pending after the purchase
+
+Look for:
+
+Debug.Log("-------------- ProcessPurchase was called ----------------");
+
+when the app starts
