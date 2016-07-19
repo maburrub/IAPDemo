@@ -1,0 +1,1 @@
+Adding an unknown product to the list of defined products should generate an error in logcat
