@@ -1,0 +1,1 @@
+Currently the mac is not consistentaly initializing. There is a ticket for that
