@@ -1,0 +1,3 @@
+This branch builds a test app in which IAP always fail by calling the following:
+
+builder.Configure<ISamsungAppsConfiguration> ().SetMode(SamsungAppsMode.AlwaysFail);

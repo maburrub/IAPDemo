@@ -185,7 +185,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// You would remove this before building your release package.
 		builder.Configure<IMicrosoftConfiguration>().useMockBillingSystem = false;
 		//builder.Configure<ISamsungAppsConfiguration> ().mode = SamsungAppsMode.AlwaysSucceed;
-		builder.Configure<ISamsungAppsConfiguration> ().mode = SamsungAppsMode.AlwaysFail;
+		builder.Configure<ISamsungAppsConfiguration> ().SetMode(SamsungAppsMode.AlwaysFail);
 
 		builder.Configure<IGooglePlayConfiguration>().SetPublicKey("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2O/9/H7jYjOsLFT/uSy3ZEk5KaNg1xx60RN7yWJaoQZ7qMeLy4hsVB3IpgMXgiYFiKELkBaUEkObiPDlCxcHnWVlhnzJBvTfeCPrYNVOOSJFZrXdotp5L0iS2NVHjnllM+HA1M0W2eSNjdYzdLmZl1bxTpXa4th+dVli9lZu7B7C2ly79i/hGTmvaClzPBNyX+Rtj7Bmo336zh2lYbRdpD5glozUq+10u91PMDPH+jqhx10eyZpiapr8dFqXl5diMiobknw9CgcjxqMTVBQHK6hS0qYKPmUDONquJn280fBs1PTeA6NMG03gb9FLESKFclcuEZtvM8ZwMMRxSLA9GwIDAQAB");
     //builder.Configure<ITizenStoreConfiguration>().SetGroupId("100000070614");
