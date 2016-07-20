@@ -1,7 +1,7 @@
 #if UNITY_ANDROID || UNITY_IPHONE || UNITY_STANDALONE_OSX || UNITY_TVOS
 // You must obfuscate your secrets using Window > Unity IAP > Receipt Validation Obfuscator
 // before receipt validation will compile in this sample.
-#define RECEIPT_VALIDATION
+// #define RECEIPT_VALIDATION
 #endif
 
 using System;
@@ -62,7 +62,9 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 						item.metadata.localizedDescription,
 						item.metadata.isoCurrencyCode,
 						item.metadata.localizedPrice.ToString(),
-						item.metadata.localizedPriceString
+						item.metadata.localizedPriceString,
+						item.transactionID,
+						item.receipt
 					}));
 			}
 		}
@@ -109,30 +111,28 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 			Application.platform == RuntimePlatform.OSXPlayer) {
 			try {
 				var result = validator.Validate(e.purchasedProduct.receipt);
-				Debug.Log("-------------- Receipt is valid. Contents:");
+				Debug.Log("Receipt is valid. Contents:");
 				foreach (IPurchaseReceipt productReceipt in result) {
-					Debug.Log("-------------- productReceipt.productID = " + productReceipt.productID);
-					Debug.Log("-------------- productReceipt.purchaseDate = " + productReceipt.purchaseDate);
-					Debug.Log("-------------- productReceipt.transactionID = " + productReceipt.transactionID);
+					Debug.Log(productReceipt.productID);
+					Debug.Log(productReceipt.purchaseDate);
+					Debug.Log(productReceipt.transactionID);
 
 					GooglePlayReceipt google = productReceipt as GooglePlayReceipt;
 					if (null != google) {
-						Debug.Log("-------------- google.purchaseState = " + google.purchaseState);
-						Debug.Log("-------------- google.purchaseToken = " + google.purchaseToken);
+						Debug.Log(google.purchaseState);
+						Debug.Log(google.purchaseToken);
 					}
 
 					AppleInAppPurchaseReceipt apple = productReceipt as AppleInAppPurchaseReceipt;
 					if (null != apple) {
-						Debug.Log("-------------- apple.originalTransactionIdentifier = " + apple.originalTransactionIdentifier);
-						Debug.Log("-------------- apple.cancellationDate = " + apple.cancellationDate);
-						Debug.Log("-------------- apple.quantity = " + apple.quantity);
+						Debug.Log(apple.originalTransactionIdentifier);
+						Debug.Log(apple.cancellationDate);
+						Debug.Log(apple.quantity);
 					}
 				}
 			} catch (IAPSecurityException) {
-				Debug.Log("-------------- Invalid receipt, not unlocking content");
-
-				Debug.Log("-------------- RETURNING PENDING --------------"); 
-				return PurchaseProcessingResult.Pending;
+				Debug.Log("Invalid receipt, not unlocking content");
+				return PurchaseProcessingResult.Complete;
 			}
 		}
 		#endif
@@ -140,8 +140,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// You should unlock the content here.
 
 		// Indicate we have handled this purchase, we will not be informed of it again.x
-		Debug.Log("-------------- RETURNING PENDING --------------");
-		return PurchaseProcessingResult.Pending;
+		return PurchaseProcessingResult.Complete;
 	}
 
 	/// <summary>
@@ -186,45 +185,37 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		var builder = ConfigurationBuilder.Instance(module);
 		// This enables the Microsoft IAP simulator for local testing.
 		// You would remove this before building your release package.
-		builder.Configure<IMicrosoftConfiguration>().useMockBillingSystem = false;
-		//builder.Configure<ISamsungAppsConfiguration> ().mode = SamsungAppsMode.AlwaysSucceed;
-		//builder.Configure<ISamsungAppsConfiguration> ().mode = SamsungAppsMode.AlwaysFail;
+		builder.Configure<IMicrosoftConfiguration>().useMockBillingSystem = true;
 
-		builder.Configure<IGooglePlayConfiguration>().SetPublicKey("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2O/9/H7jYjOsLFT/uSy3ZEk5KaNg1xx60RN7yWJaoQZ7qMeLy4hsVB3IpgMXgiYFiKELkBaUEkObiPDlCxcHnWVlhnzJBvTfeCPrYNVOOSJFZrXdotp5L0iS2NVHjnllM+HA1M0W2eSNjdYzdLmZl1bxTpXa4th+dVli9lZu7B7C2ly79i/hGTmvaClzPBNyX+Rtj7Bmo336zh2lYbRdpD5glozUq+10u91PMDPH+jqhx10eyZpiapr8dFqXl5diMiobknw9CgcjxqMTVBQHK6hS0qYKPmUDONquJn280fBs1PTeA6NMG03gb9FLESKFclcuEZtvM8ZwMMRxSLA9GwIDAQAB");
-    //builder.Configure<ITizenStoreConfiguration>().SetGroupId("100000070614");
-		
-    // Define our products.
+		// Define our products.
 		// In this case our products have the same identifier across all the App stores,
 		// except on the Mac App store where product IDs cannot be reused across both Mac and
 		// iOS stores.
 		// So on the Mac App store our products have different identifiers,
 		// and we tell Unity IAP this by using the IDs class.
-		builder.AddProduct("coins", ProductType.Consumable, new IDs
-			{
-				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.6", AppleAppStore.Name},
-				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.7", MacAppStore.Name},
-				{"com.eight.bit.avenue.amorcam.100coins.2", GooglePlay.Name},
-				{"com.eight.bit.avenue.100coins.1", WindowsStore.Name}//,
-				//{"100.gold.coins", SamsungApps.Name}
-			});
+		builder.AddProduct("100.gold.coins", ProductType.Consumable, new IDs
+		{
+			{"100.gold.coins.mac", MacAppStore.Name},
+		});
+
+		builder.AddProduct("500.gold.coins", ProductType.Consumable, new IDs
+		{
+			{"500.gold.coins.mac", MacAppStore.Name},
+		});
 
 		builder.AddProduct("sword", ProductType.NonConsumable, new IDs
-			{
-				{"com.unity3d.unityiap.unityiapdemo.sword.6", AppleAppStore.Name},
-				{"com.unity3d.unityiap.unityiapdemo.sword.7", MacAppStore.Name},
-				{"com.eight.bit.avenue.amorcam.sword.2", GooglePlay.Name},
-				{"com.eight.bit.avenue.sword.1", WindowsStore.Name}//,
-				//{"sword", SamsungApps.Name}
-			});
+		{
+			{"sword.mac", MacAppStore.Name}
+		});
+
 		builder.AddProduct("subscription", ProductType.Subscription, new IDs
-			{
-				{"com.unity3d.unityiap.unityiapdemo.subscription", AppleAppStore.Name},
-				{"com.unity3d.unityiap.unityiapdemo.subscription.7", MacAppStore.Name},
-				{"com.eight.bit.avenue.amorcam.subscription.2", GooglePlay.Name},
-				{"com.eight.bit.avenue.subscription.1", WindowsStore.Name}//,
-				//{"subscription", SamsungApps.Name}
-			});
-		
+		{
+			{"subscription.mac", MacAppStore.Name}
+		});
+
+		// Write Amazon's JSON description of our products to storage when using Amazon's local sandbox.
+		// This should be removed from a production build.
+		builder.Configure<IAmazonConfiguration>().WriteSandboxJSON(builder.products);
 
 		#if RECEIPT_VALIDATION
 		validator = new CrossPlatformValidator(GooglePlayTangle.Data(), AppleTangle.Data(), Application.bundleIdentifier);
@@ -232,7 +223,6 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 
 		// Now we're ready to initialize Unity IAP.
 		UnityPurchasing.Initialize(this, builder);
-		//UnityPurchasing.Initialize(this, builder);
 	}
 
 	/// <summary>
