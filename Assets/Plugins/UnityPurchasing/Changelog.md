@@ -1,4 +1,4 @@
-## [1.6.1] - ????
+## [1.6.1] - 2016-07-18
 ### Fixed
 - Google Play - fixed non fatal 'IllegalArgumentException: Receiver not registered' warning appearing in crashlogs.
 
