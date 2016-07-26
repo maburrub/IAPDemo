@@ -173,7 +173,8 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 
 	public void Awake()
 	{
-		var module = StandardPurchasingModule.Instance();
+		var module = StandardPurchasingModule.Instance (AndroidStore.SamsungApps);
+
 
 		// The FakeStore supports: no-ui (always succeeding), basic ui (purchase pass/fail), and 
 		// developer ui (initialization, purchase, failure code setting). These correspond to 
