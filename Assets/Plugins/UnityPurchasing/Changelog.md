@@ -1,4 +1,23 @@
-## [1.6.0] - ????
+## [1.7.0] - ????
+### Added
+- Samsung Galaxy store support. Draft documentation is available [here](https://docs.google.com/document/d/1kUq-AHKyJftUA68xr44mrp7gs_MNxNiQ693s0b7qDdM).
+- Google Play - failed purchases - the [Google Play server response code](https://developer.android.com/google/play/billing/billing_reference.html#billing-codes) is now supplied as the [PurchaseFailedEventArgs.message](https://docs.unity3d.com/ScriptReference/Purchasing.PurchaseFailedEventArgs-message.html) property for failed purchases.
+- Android - it is now possible to choose the store implementation to use at runtime.
+    - Make a build containing all store implementations by choosing Window > Unity IAP > Android > "Select store at runtime"
+
+```csharp
+// Pass the desired store to the module, e.g. Amazon Apps.
+var module = StandardPurchasingModule.Instance(AndroidStore.AmazonAppStore);
+```
+
+### Fixed
+- Google Play - PurchaseFailureReason.ItemUnavailable and PurchaseFailureReason.BillingUnavailable being reported as 'Unknown' errors.
+
+## [1.6.1] - 2016-07-18
+### Fixed
+- Google Play - fixed non fatal 'IllegalArgumentException: Receiver not registered' warning appearing in crashlogs.
+
+## [1.6.0] - 2016-7-7
 ### Added
 - Support for redeeming [Google Play promo codes](https://developer.android.com/google/play/billing/billing_promotions.html) for IAPs.
 - IAndroidStoreSelection extended configuration for accessing the currently selected Android store.
