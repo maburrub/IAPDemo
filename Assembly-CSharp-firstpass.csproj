@@ -80,6 +80,9 @@
  <Reference Include="winrt">
  <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityPurchasing/winrt/winrt.dll</HintPath>
  </Reference>
+ <Reference Include="Tizen">
+ <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityPurchasing/Bin/Tizen/Tizen.dll</HintPath>
+ </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
