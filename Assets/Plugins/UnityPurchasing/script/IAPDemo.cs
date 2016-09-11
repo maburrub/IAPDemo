@@ -26,11 +26,13 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 	// Unity IAP objects 
 	private IStoreController m_Controller;
 	private IAppleExtensions m_AppleExtensions;
+	private ISamsungAppsExtensions m_SamsungExtensions;
 
 	private int m_SelectedItemIndex = -1; // -1 == no product
 	private bool m_PurchaseInProgress;
 
 	private Selectable m_InteractableSelectable; // Optimization used for UI state management
+	private bool m_IsSamsungAppsStoreSelected;
 
 	#if RECEIPT_VALIDATION
 	private CrossPlatformValidator validator;
@@ -43,6 +45,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 	{
 		m_Controller = controller;
 		m_AppleExtensions = extensions.GetExtension<IAppleExtensions> ();
+		m_SamsungExtensions = extensions.GetExtension<ISamsungAppsExtensions> ();
 
 		InitUI(controller.products.all);
 
@@ -62,7 +65,9 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 						item.metadata.localizedDescription,
 						item.metadata.isoCurrencyCode,
 						item.metadata.localizedPrice.ToString(),
-						item.metadata.localizedPriceString
+						item.metadata.localizedPriceString,
+						item.transactionID,
+						item.receipt
 					}));
 			}
 		}
@@ -124,6 +129,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 					AppleInAppPurchaseReceipt apple = productReceipt as AppleInAppPurchaseReceipt;
 					if (null != apple) {
 						Debug.Log("-------------- apple.originalTransactionIdentifier = " + apple.originalTransactionIdentifier);
+						Debug.Log("-------------- apple.subscriptionExpirationDate = " + apple.subscriptionExpirationDate);
 						Debug.Log("-------------- apple.cancellationDate = " + apple.cancellationDate);
 						Debug.Log("-------------- apple.quantity = " + apple.quantity);
 					}
@@ -186,11 +192,8 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// This enables the Microsoft IAP simulator for local testing.
 		// You would remove this before building your release package.
 		builder.Configure<IMicrosoftConfiguration>().useMockBillingSystem = false;
-		//builder.Configure<ISamsungAppsConfiguration> ().mode = SamsungAppsMode.AlwaysSucceed;
-		//builder.Configure<ISamsungAppsConfiguration> ().mode = SamsungAppsMode.AlwaysFail;
 
 		builder.Configure<IGooglePlayConfiguration>().SetPublicKey("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2O/9/H7jYjOsLFT/uSy3ZEk5KaNg1xx60RN7yWJaoQZ7qMeLy4hsVB3IpgMXgiYFiKELkBaUEkObiPDlCxcHnWVlhnzJBvTfeCPrYNVOOSJFZrXdotp5L0iS2NVHjnllM+HA1M0W2eSNjdYzdLmZl1bxTpXa4th+dVli9lZu7B7C2ly79i/hGTmvaClzPBNyX+Rtj7Bmo336zh2lYbRdpD5glozUq+10u91PMDPH+jqhx10eyZpiapr8dFqXl5diMiobknw9CgcjxqMTVBQHK6hS0qYKPmUDONquJn280fBs1PTeA6NMG03gb9FLESKFclcuEZtvM8ZwMMRxSLA9GwIDAQAB");
-    //builder.Configure<ITizenStoreConfiguration>().SetGroupId("100000070614");
 		
     // Define our products.
 		// In this case our products have the same identifier across all the App stores,
@@ -200,9 +203,9 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// and we tell Unity IAP this by using the IDs class.
 		builder.AddProduct("coins", ProductType.Consumable, new IDs
 			{
-				//{"com.unity3d.unityiap.unityiapdemo.100goldcoins.6", AppleAppStore.Name},
+				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.6", AppleAppStore.Name},
 				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.7", MacAppStore.Name},
-				{"com.eight.bit.avenue.amorcam.100coins.2", GooglePlay.Name},
+				{"com.eight.bit.avenue.amorcam.100coins.3", GooglePlay.Name},
 				{"com.eight.bit.avenue.100coins.1", WindowsStore.Name}//,
 				//{"100.gold.coins", SamsungApps.Name}
 			});
@@ -211,7 +214,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 			{
 				{"com.unity3d.unityiap.unityiapdemo.sword.6", AppleAppStore.Name},
 				{"com.unity3d.unityiap.unityiapdemo.sword.7", MacAppStore.Name},
-				{"com.eight.bit.avenue.amorcam.sword.2", GooglePlay.Name},
+				{"com.eight.bit.avenue.amorcam.sword.3", GooglePlay.Name},
 				{"com.eight.bit.avenue.sword.1", WindowsStore.Name}//,
 				//{"sword", SamsungApps.Name}
 			});
@@ -219,11 +222,30 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 			{
 				{"com.unity3d.unityiap.unityiapdemo.subscription", AppleAppStore.Name},
 				{"com.unity3d.unityiap.unityiapdemo.subscription.7", MacAppStore.Name},
-				{"com.eight.bit.avenue.amorcam.subscription.2", GooglePlay.Name},
+				{"com.eight.bit.avenue.amorcam.subscription.3", GooglePlay.Name},
 				{"com.eight.bit.avenue.subscription.1", WindowsStore.Name}//,
 				//{"subscription", SamsungApps.Name}
 			});
 		
+		// Write Amazon's JSON description of our products to storage when using Amazon's local sandbox.
+		// This should be removed from a production build.
+		builder.Configure<IAmazonConfiguration>().WriteSandboxJSON(builder.products);
+
+		// This enables simulated purchase success for Samsung IAP.
+		// You would remove this, or set to SamsungAppsMode.Production, before building your release package.
+		builder.Configure<ISamsungAppsConfiguration>().SetMode(SamsungAppsMode.AlwaysSucceed);
+		builder.Configure<ISamsungAppsConfiguration>().SetMode(SamsungAppsMode.AlwaysFail);
+		// This records whether we are using Samsung IAP. Currently ISamsungAppsExtensions.RestoreTransactions
+		// displays a blocking Android Activity, so: 
+		// A) Unity IAP does not automatically restore purchases on Samsung Galaxy Apps
+		// B) IAPDemo (this) displays the "Restore" GUI button for Samsung Galaxy Apps
+		m_IsSamsungAppsStoreSelected = module.androidStore == AndroidStore.SamsungApps;
+
+
+		// This selects the GroupId that was created in the Tizen Store for this set of products
+		// An empty or non-matching GroupId here will result in no products available for purchase
+		builder.Configure<ITizenStoreConfiguration>().SetGroupId("100000085616");
+
 
 		#if RECEIPT_VALIDATION
 		validator = new CrossPlatformValidator(GooglePlayTangle.Data(), AppleTangle.Data(), Application.bundleIdentifier);
@@ -231,7 +253,6 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 
 		// Now we're ready to initialize Unity IAP.
 		UnityPurchasing.Initialize(this, builder);
-		//UnityPurchasing.Initialize(this, builder);
 	}
 
 	/// <summary>
@@ -264,8 +285,9 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		m_InteractableSelectable = GetDropdown(); // References any one of the disabled components
 
 		// Show Restore button on Apple platforms
-		if (Application.platform != RuntimePlatform.IPhonePlayer && 
-			Application.platform != RuntimePlatform.OSXPlayer)
+		if (! (Application.platform == RuntimePlatform.IPhonePlayer || 
+			   Application.platform == RuntimePlatform.OSXPlayer ||
+			   m_IsSamsungAppsStoreSelected ) )
 		{
 			GetRestoreButton().gameObject.SetActive(false);
 		}
@@ -304,7 +326,14 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		{
 			GetRestoreButton().onClick.AddListener(() =>
 			{ 
-				m_AppleExtensions.RestoreTransactions(OnTransactionsRestored);
+				if (m_IsSamsungAppsStoreSelected)
+				{
+					m_SamsungExtensions.RestoreTransactions(OnTransactionsRestored);
+				}
+				else
+				{
+					m_AppleExtensions.RestoreTransactions(OnTransactionsRestored);
+				}
 			});
 		}
 	}
