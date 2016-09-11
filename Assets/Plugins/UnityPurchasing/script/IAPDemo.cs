@@ -232,7 +232,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// This enables simulated purchase success for Samsung IAP.
 		// You would remove this, or set to SamsungAppsMode.Production, before building your release package.
 		builder.Configure<ISamsungAppsConfiguration>().SetMode(SamsungAppsMode.AlwaysSucceed);
-		builder.Configure<ISamsungAppsConfiguration>().SetMode(SamsungAppsMode.AlwaysFail);
+		//builder.Configure<ISamsungAppsConfiguration>().SetMode(SamsungAppsMode.AlwaysFail);
 		// This records whether we are using Samsung IAP. Currently ISamsungAppsExtensions.RestoreTransactions
 		// displays a blocking Android Activity, so: 
 		// A) Unity IAP does not automatically restore purchases on Samsung Galaxy Apps
