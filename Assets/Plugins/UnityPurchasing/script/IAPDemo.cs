@@ -207,12 +207,12 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		builder.Configure<IMicrosoftConfiguration>().useMockBillingSystem = true;
 		builder.Configure<IGooglePlayConfiguration>().SetPublicKey("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2O/9/H7jYjOsLFT/uSy3ZEk5KaNg1xx60RN7yWJaoQZ7qMeLy4hsVB3IpgMXgiYFiKELkBaUEkObiPDlCxcHnWVlhnzJBvTfeCPrYNVOOSJFZrXdotp5L0iS2NVHjnllM+HA1M0W2eSNjdYzdLmZl1bxTpXa4th+dVli9lZu7B7C2ly79i/hGTmvaClzPBNyX+Rtj7Bmo336zh2lYbRdpD5glozUq+10u91PMDPH+jqhx10eyZpiapr8dFqXl5diMiobknw9CgcjxqMTVBQHK6hS0qYKPmUDONquJn280fBs1PTeA6NMG03gb9FLESKFclcuEZtvM8ZwMMRxSLA9GwIDAQAB");
 
-		// cloudmoolah data setings for test
-		// All games must set the configuration. the configuration need to apply in the cloudmoolah Platform.
-		// manufacturer service identifer
-		builder.Configure<IMoolahConfiguration>().appKey = "54ad14a8a350e0a71d4764ae9825fc0e";
-		// for purchase 
-		builder.Configure<IMoolahConfiguration>().hashKey = "asdfasdfadsfsadcok-test-a-d";
+		// CloudMoolah Configuration setings 
+		// All games must set the configuration. the configuration need to apply on the CloudMoolah Portal.
+		// CloudMoolah APP Key
+		builder.Configure<IMoolahConfiguration>().appKey = "c2de3ab7b8014eec1ad85183e485d701";
+		// CloudMoolah Hash Key
+		builder.Configure<IMoolahConfiguration>().hashKey = "unityiapdemohashkey";
 
 
 
@@ -244,7 +244,8 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 			});
 		
 		// Define Cloud Moolah Product, it is available for test on Cloud Moolah Android Platform.
-		builder.AddProduct("100.gold.coins.cloudmoolah", ProductType.Consumable);
+		builder.AddProduct("com.cloudmoolah.golds.10", ProductType.Consumable);
+		builder.AddProduct("com.cloudmoolah.golds.100", ProductType.Consumable);
 		
 		// Write Amazon's JSON description of our products to storage when using Amazon's local sandbox.
 		// This should be removed from a production build.
@@ -321,6 +322,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// Initialize my button event handling
 		GetBuyButton().onClick.AddListener(() => { 
 			if (m_PurchaseInProgress == true) {
+				Debug.Log("m_PurchaseInProgress is true");
 				return;
 			}
 			// Online Game need to login on Cloud Moolah PlatForm.
@@ -331,12 +333,15 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 				Debug.LogError("Cloud Moolah need to login!");
 				return;
 			}
-			m_Controller.InitiatePurchase(m_Controller.products.all[m_SelectedItemIndex]); 
-
 			// Don't need to draw our UI whilst a purchase is in progress.
 			// This is not a requirement for IAP Applications but makes the demo
 			// scene tidier whilst the fake purchase dialog is showing.
 			m_PurchaseInProgress = true;
+
+			m_Controller.InitiatePurchase(m_Controller.products.all[m_SelectedItemIndex],"CloudMoolahPayLoad"); 
+
+
+
 		});
 
 		if (GetRestoreButton() != null)
@@ -351,14 +356,14 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		if(GetLoginButton()	!= null)
 		{
 			GetLoginButton ().onClick.AddListener (() => {
-				m_MoolahExtensions.login (m_CloudMoolahUserName, "CMPassword", loginSuccessed,loginFailed);
+				m_MoolahExtensions.Login (m_CloudMoolahUserName, "CMPassword", LoginSuccessed,LoginFailed);
 			});
 		}
 		if(GetRegisternButton()	!= null)
 		{
 			GetRegisternButton ().onClick.AddListener (() => {
-				//Use Game User ID and password　register a Cloud Moolah Acount.
-				m_MoolahExtensions.registerOrBinding ("GameUserID", "CMPassword",registerOrBindingSuccessed, registerOrBindingFailed);
+				//Use Custom password register a Cloud Moolah Acount.
+				m_MoolahExtensions.FastRegister ("CMPassword",RegisterSuccessed, RegisterFailed);
 			});
 		}
 		if(GetCMRestoreButton() != null)
@@ -373,7 +378,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 					return;
 				}
 				// Restore abnornal transaction identifer, if Client don't receive transaction identifer.
-				m_MoolahExtensions.restoreTransactionID ((RestoreTransactionIDState restoreTransactionIDState)=>{
+				m_MoolahExtensions.RestoreTransactionID ((RestoreTransactionIDState restoreTransactionIDState)=>{
 					Debug.Log("RestoreTransactionIDState is " + restoreTransactionIDState.ToString());
 				});
 			});
@@ -382,7 +387,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		{
 			GetPayoutButton ().onClick.AddListener (() => {
 				//Stand-alone Game need to Payout, change transaction identifer state.
-				m_MoolahExtensions.requestPayOut(m_CloudMoolahTransationID, (string transationID,RequestPayOutState state, string msg)=>{
+				m_MoolahExtensions.RequestPayOut(m_CloudMoolahTransationID, (string transationID,RequestPayOutState state, string msg)=>{
 					Debug.Log("requestPayOut TannsationID:" + transationID + ",state:"+ state.ToString() + ",msg:"+msg);
 				} );
 			});
@@ -391,7 +396,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		{
 			GetValidButton ().onClick.AddListener (() => {
 				//vaildate receipt true or false.
-				m_MoolahExtensions.validateReceipt (m_CloudMoolahTransationID,m_CloudMoolahReceipt, (string transationID,ValidateReceiptState state, string  msg)=>{
+				m_MoolahExtensions.ValidateReceipt (m_CloudMoolahTransationID,m_CloudMoolahReceipt, (string transationID,ValidateReceiptState state, string  msg)=>{
 					Debug.Log("validateReceipt TannsationID:" + transationID + ",state:"+ state.ToString() + ",msg:"+msg);
 				});
 			});
@@ -399,24 +404,24 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		//-----End-----
 
 	}
-	//---------------------login and registerOrBinding callBack--------------------------
+	//---------------------login and register callBack--------------------------
 	//-----------------------------start------------------------------------	
-	public void loginSuccessed (string token,string CMuserid,string CMAcount)
+	public void LoginSuccessed (string token)
 	{
-		Debug.Log ("loginSuccessed: CMuserid is " + CMuserid);
+		Debug.Log ("loginSuccessed: token is " + token);
 	}
-	public void loginFailed (LoginError error, string errorMsg)
+	public void LoginFailed (LoginError error, string errorMsg)
 	{
 		Debug.Log ("loginFailed: type is " + error.ToString () + " ! msg is " + errorMsg);
 	}
-	public void registerOrBindingSuccessed (string cmUserName, string cmID)
+	public void RegisterSuccessed (string cmUserName)
 	{
 		m_CloudMoolahUserName = cmUserName;
-		Debug.Log ("registerOrBindingSuccessed : cmUserName is " + cmUserName + " , cmID is " + cmID);
+		Debug.Log ("registerSuccessed : cmUserName is " + cmUserName);
 	}
-	public void registerOrBindingFailed (RegisterOrBindingError error, string errorMsg)
+	public void RegisterFailed (FastRegisterError error, string errorMsg)
 	{
-		Debug.Log ("registerOrBindingFailed :RegisterOrBindingError is " + error.ToString() + ", errorMsg is " + errorMsg);
+		Debug.Log ("registerFailed :RegisterError is " + error.ToString() + ", errorMsg is " + errorMsg);
 	}
 	//----------------------------end---------------------------------------	
 	public void UpdateHistoryUI()
