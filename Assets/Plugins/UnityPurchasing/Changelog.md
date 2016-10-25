@@ -1,7 +1,17 @@
-## [1.8.3]
+## [1.8.4] - 2016-10-25
+### Added
+- Google Play - Support for Daydream VR. Requires Unity 5.4 "GVR" Technical Preview, enabling VR, and including the Daydream SDK. See also https://unity3d.com/partners/google/daydream.
+- Samsung Galaxy Store - Added support for auto-recurring subscriptions
+- Chosen Android store highlighted in menu Window > Unity IAP > Android
+
+### Fixed
+- Remove the menu item to select Android store at runtime
+
+## [1.8.3] - 2016-10-13
 ### Fixed
 - iOS crash when calling PurchasingManager.ConfirmPendingPurchase with a product that does not have a transaction ID
-- Ensure tvOS build uses correct correct stub DLL
+- Ensure tvOS build uses correct stub DLL
+- Support transaction receipt logging for all store platforms. Requires corresponding Unity Engine: currently unreleased Unity 5.3/5.4 patch, or Unity 5.5.0b7+.
 
 ## [1.8.2] - 2016-09-23
 ### Fixed
