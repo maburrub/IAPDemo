@@ -249,6 +249,9 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		validator = new CrossPlatformValidator(GooglePlayTangle.Data(), AppleTangle.Data(), Application.bundleIdentifier);
 		#endif
 
+		//This should not cause any exceptions in android
+		System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("fr-FR");
+
 		// Now we're ready to initialize Unity IAP.
 		UnityPurchasing.Initialize(this, builder);
 	}
