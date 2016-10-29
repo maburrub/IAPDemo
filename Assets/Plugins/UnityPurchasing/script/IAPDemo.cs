@@ -310,6 +310,9 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		#endif
 
 		// Now we're ready to initialize Unity IAP.
+		Debug.Log("-------------- Unity : 1st init --------------");
+		UnityPurchasing.Initialize(this, builder);
+		Debug.Log("-------------- Unity : 2nd init --------------");
 		UnityPurchasing.Initialize(this, builder);
 	}
 
