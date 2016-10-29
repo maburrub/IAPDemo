@@ -46,6 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Plugins\UnityPurchasing\Editor\IAPButtonEditor.cs" />
      <Compile Include="Assets\Plugins\UnityPurchasing\Editor\UnityPurchasingEditor.cs" />
  <Reference Include="UnityEngine.Advertisements">
  <HintPath>/Applications/Unity5.5.0b9/Unity.app/Contents/UnityExtensions/Unity/Advertisements/UnityEngine.Advertisements.dll</HintPath>
