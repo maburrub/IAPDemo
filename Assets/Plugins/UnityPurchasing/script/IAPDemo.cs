@@ -1,7 +1,7 @@
 #if UNITY_ANDROID || UNITY_IPHONE || UNITY_STANDALONE_OSX || UNITY_TVOS
 // You must obfuscate your secrets using Window > Unity IAP > Receipt Validation Obfuscator
 // before receipt validation will compile in this sample.
-// #define RECEIPT_VALIDATION
+#define RECEIPT_VALIDATION
 #endif
 
 using System;
@@ -27,18 +27,19 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 	private IStoreController m_Controller;
 	private IAppleExtensions m_AppleExtensions;
 	private IMoolahExtension m_MoolahExtensions;
-
+	private ISamsungAppsExtensions m_SamsungExtensions;
 
 	private int m_SelectedItemIndex = -1; // -1 == no product
 	private bool m_PurchaseInProgress;
 
-	// For Cloud Moolah Platform.
 	private bool m_IsCloudMoolahStoreSelected; 
-	private string m_CloudMoolahTransationID;
-	private string m_CloudMoolahReceipt;
+	private string m_LastTransationID;
+	private string m_LastReceipt;
 	private string m_CloudMoolahUserName;
+	private bool m_IsLoggedIn = false;
 
 	private Selectable m_InteractableSelectable; // Optimization used for UI state management
+	private bool m_IsSamsungAppsStoreSelected;
 
 	#if RECEIPT_VALIDATION
 	private CrossPlatformValidator validator;
@@ -51,6 +52,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 	{
 		m_Controller = controller;
 		m_AppleExtensions = extensions.GetExtension<IAppleExtensions> ();
+		m_SamsungExtensions = extensions.GetExtension<ISamsungAppsExtensions> ();
 		m_MoolahExtensions = extensions.GetExtension<IMoolahExtension> ();
 
 		InitUI(controller.products.all);
@@ -100,57 +102,87 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// Now that I have real products, begin showing product purchase history
 		UpdateHistoryUI();
 	}
+
 	/// <summary>
 	/// This will be called when a purchase completes.
 	/// </summary>
-	/// 
 	public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs e)
 	{
 		Debug.Log("Purchase OK: " + e.purchasedProduct.definition.id);
 		Debug.Log("Receipt: " + e.purchasedProduct.receipt);
-		m_CloudMoolahTransationID = e.purchasedProduct.transactionID;
-		m_CloudMoolahReceipt =  e.purchasedProduct.receipt;
+
+		m_LastTransationID = e.purchasedProduct.transactionID;
+		m_LastReceipt = e.purchasedProduct.receipt;
 		m_PurchaseInProgress = false;
 
 		// Now that my purchase history has changed, update its UI
 		UpdateHistoryUI();
 
 		#if RECEIPT_VALIDATION
+		// Local validation is available for GooglePlay and Apple stores
 		if (Application.platform == RuntimePlatform.Android ||
 			Application.platform == RuntimePlatform.IPhonePlayer ||
 			Application.platform == RuntimePlatform.OSXPlayer) {
 			try {
 				var result = validator.Validate(e.purchasedProduct.receipt);
-				Debug.Log("Receipt is valid. Contents:");
+				Debug.Log("-------------- Receipt is valid. Contents:");
 				foreach (IPurchaseReceipt productReceipt in result) {
-					Debug.Log(productReceipt.productID);
-					Debug.Log(productReceipt.purchaseDate);
-					Debug.Log(productReceipt.transactionID);
+					Debug.Log("-------------- productReceipt.productID = " + productReceipt.productID);
+					Debug.Log("-------------- productReceipt.purchaseDate = " + productReceipt.purchaseDate);
+					Debug.Log("-------------- productReceipt.transactionID = " + productReceipt.transactionID);
 
 					GooglePlayReceipt google = productReceipt as GooglePlayReceipt;
 					if (null != google) {
-						Debug.Log(google.purchaseState);
-						Debug.Log(google.purchaseToken);
+						Debug.Log("-------------- google.purchaseState = " + google.purchaseState);
+						Debug.Log("-------------- google.purchaseToken = " + google.purchaseToken);
 					}
 
 					AppleInAppPurchaseReceipt apple = productReceipt as AppleInAppPurchaseReceipt;
 					if (null != apple) {
-						Debug.Log(apple.originalTransactionIdentifier);
-						Debug.Log(apple.subscriptionExpirationDate);
-						Debug.Log(apple.cancellationDate);
-						Debug.Log(apple.quantity);
+						Debug.Log("-------------- apple.originalTransactionIdentifier = " + apple.originalTransactionIdentifier);
+						Debug.Log("-------------- apple.subscriptionExpirationDate = " + apple.subscriptionExpirationDate);
+						Debug.Log("-------------- apple.cancellationDate = " + apple.cancellationDate);
+						Debug.Log("-------------- apple.quantity = " + apple.quantity);
 					}
 				}
 			} catch (IAPSecurityException) {
-				Debug.Log("Invalid receipt, not unlocking content");
+				Debug.Log("-------------- Invalid receipt, not unlocking content");
 				return PurchaseProcessingResult.Complete;
 			}
 		}
 		#endif
 
+		// CloudMoolah purchase completion / finishing currently requires using the API 
+		// extension IMoolahExtension.RequestPayout to finish a transaction.
+		if (m_IsCloudMoolahStoreSelected)
+		{
+			// Finish transaction with CloudMoolah server
+			m_MoolahExtensions.RequestPayOut(e.purchasedProduct.transactionID, 
+				(string transactionID, RequestPayOutState state, string message) => {
+					if (state == RequestPayOutState.RequestPayOutSucceed) {
+						// Finally, finish transaction with Unity IAP's local
+						// transaction log, recording the transaction id there
+						m_Controller.ConfirmPendingPurchase(e.purchasedProduct);
+
+						// Unlock content here.
+					} else {
+						Debug.Log("RequestPayOut: failed. transactionID: " + transactionID + 
+							", state: " + state + ", message: " + message);
+						// Finishing failed. Retry later.
+					}
+			});
+		}
+
 		// You should unlock the content here.
 
-		// Indicate we have handled this purchase, we will not be informed of it again.x
+		// Indicate if we have handled this purchase. 
+		//   PurchaseProcessingResult.Complete: ProcessPurchase will not be called
+		//     with this product again, until next purchase.
+		//   PurchaseProcessingResult.Pending: ProcessPurchase will be called 
+		//     again with this product at next app launch. Later, call 
+		//     m_Controller.ConfirmPendingPurchase(Product) to complete handling
+		//     this purchase. Use to transactionally save purchases to a cloud
+		//     game service. 
 		return PurchaseProcessingResult.Complete;
 	}
 
@@ -161,6 +193,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 	{
 		Debug.Log("Purchase failed: " + item.definition.id);
 		Debug.Log(r);
+
 		m_PurchaseInProgress = false;
 	}
 
@@ -183,8 +216,6 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		}
 	}
 
-
-
 	public void Awake()
 	{
 		var module = StandardPurchasingModule.Instance();
@@ -196,25 +227,24 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 
 		var builder = ConfigurationBuilder.Instance(module);
 
-		// This records whether we are using Cloud Moolah IAP. 
-		// Cloud Moolah requires logging in, so: 
-		// A) IAPDemo (this) displays the Cloud Moolah GUI button for Cloud Moolah
-		m_IsCloudMoolahStoreSelected = Application.platform == RuntimePlatform.Android  && module.androidStore == AndroidStore.CloudMoolah;
-
-
 		// This enables the Microsoft IAP simulator for local testing.
 		// You would remove this before building your release package.
-		builder.Configure<IMicrosoftConfiguration>().useMockBillingSystem = true;
+		builder.Configure<IMicrosoftConfiguration>().useMockBillingSystem = false;
 		builder.Configure<IGooglePlayConfiguration>().SetPublicKey("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2O/9/H7jYjOsLFT/uSy3ZEk5KaNg1xx60RN7yWJaoQZ7qMeLy4hsVB3IpgMXgiYFiKELkBaUEkObiPDlCxcHnWVlhnzJBvTfeCPrYNVOOSJFZrXdotp5L0iS2NVHjnllM+HA1M0W2eSNjdYzdLmZl1bxTpXa4th+dVli9lZu7B7C2ly79i/hGTmvaClzPBNyX+Rtj7Bmo336zh2lYbRdpD5glozUq+10u91PMDPH+jqhx10eyZpiapr8dFqXl5diMiobknw9CgcjxqMTVBQHK6hS0qYKPmUDONquJn280fBs1PTeA6NMG03gb9FLESKFclcuEZtvM8ZwMMRxSLA9GwIDAQAB");
 
 		// CloudMoolah Configuration setings 
 		// All games must set the configuration. the configuration need to apply on the CloudMoolah Portal.
 		// CloudMoolah APP Key
-		builder.Configure<IMoolahConfiguration>().appKey = "c2de3ab7b8014eec1ad85183e485d701";
+		builder.Configure<IMoolahConfiguration>().appKey = "d93f4564c41d463ed3d3cd207594ee1b";
 		// CloudMoolah Hash Key
-		builder.Configure<IMoolahConfiguration>().hashKey = "unityiapdemohashkey";
-
-
+		builder.Configure<IMoolahConfiguration>().hashKey = "cc";
+		// This enables the CloudMoolah test mode for local testing.
+		// You would remove this, or set to CloudMoolahMode.Production, before building your release package.
+		builder.Configure<IMoolahConfiguration>().SetMode(CloudMoolahMode.AlwaysSucceed);
+		// This records whether we are using Cloud Moolah IAP. 
+		// Cloud Moolah requires logging in to access your Digital Wallet, so: 
+		// A) IAPDemo (this) displays the Cloud Moolah GUI button for Cloud Moolah
+		m_IsCloudMoolahStoreSelected = Application.platform == RuntimePlatform.Android && module.androidStore == AndroidStore.CloudMoolah;
 
 		// Define our products.
 		// In this case our products have the same identifier across all the App stores,
@@ -222,34 +252,58 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// iOS stores.
 		// So on the Mac App store our products have different identifiers,
 		// and we tell Unity IAP this by using the IDs class.
-
-
-		builder.AddProduct("100.gold.coins", ProductType.Consumable, new IDs
+		builder.AddProduct("coins", ProductType.Consumable, new IDs
 			{
-				{"100.gold.coins.mac", MacAppStore.Name},
-			});
-
-		builder.AddProduct("500.gold.coins", ProductType.Consumable, new IDs
-			{
-				{"500.gold.coins.mac", MacAppStore.Name},
+				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.6", AppleAppStore.Name},
+				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.7", MacAppStore.Name},
+				{"com.eight.bit.avenue.amorcam.100coins.3", GooglePlay.Name},
+				{"com.eight.bit.avenue.100coins.1", WindowsStore.Name},
+				{"100.gold.coins", SamsungApps.Name},
+				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.az", AmazonApps.Name},
+				{"000000596581", TizenStore.Name},
+			    {"com.ee", MoolahAppStore.Name}
 			});
 
 		builder.AddProduct("sword", ProductType.NonConsumable, new IDs
 			{
-				{"sword.mac", MacAppStore.Name}
+				{"com.unity3d.unityiap.unityiapdemo.sword.6", AppleAppStore.Name},
+				{"com.unity3d.unityiap.unityiapdemo.sword.7", MacAppStore.Name},
+				{"com.eight.bit.avenue.amorcam.sword.3", GooglePlay.Name},
+				{"com.eight.bit.avenue.sword.1", WindowsStore.Name},
+				{"sword", SamsungApps.Name},
+				{"com.unity3d.unityiap.unityiapdemo.sword.az", AmazonApps.Name},
+				{"000000596583", TizenStore.Name}
 			});
+
 		builder.AddProduct("subscription", ProductType.Subscription, new IDs
 			{
-				{"subscription.mac", MacAppStore.Name}
+				{"com.unity3d.unityiap.unityiapdemo.subscription", AppleAppStore.Name},
+				{"com.unity3d.unityiap.unityiapdemo.subscription.7", MacAppStore.Name},
+				{"com.eight.bit.avenue.amorcam.subscription.3", GooglePlay.Name},
+				{"com.eight.bit.avenue.subscription.1", WindowsStore.Name},
+				{"subscription", SamsungApps.Name},
+				{"com.unity3d.unityiap.unityiapdemo.subscription.annually", AmazonApps.Name}
 			});
-		
-		// Define Cloud Moolah Product, it is available for test on Cloud Moolah Android Platform.
-		builder.AddProduct("com.cloudmoolah.golds.10", ProductType.Consumable);
-		builder.AddProduct("com.cloudmoolah.golds.100", ProductType.Consumable);
 		
 		// Write Amazon's JSON description of our products to storage when using Amazon's local sandbox.
 		// This should be removed from a production build.
 		builder.Configure<IAmazonConfiguration>().WriteSandboxJSON(builder.products);
+
+		// This enables simulated purchase success for Samsung IAP.
+		// You would remove this, or set to SamsungAppsMode.Production, before building your release package.
+		builder.Configure<ISamsungAppsConfiguration>().SetMode(SamsungAppsMode.AlwaysSucceed);
+		builder.Configure<ISamsungAppsConfiguration>().SetMode(SamsungAppsMode.AlwaysFail);
+		// This records whether we are using Samsung IAP. Currently ISamsungAppsExtensions.RestoreTransactions
+		// displays a blocking Android Activity, so: 
+		// A) Unity IAP does not automatically restore purchases on Samsung Galaxy Apps
+		// B) IAPDemo (this) displays the "Restore" GUI button for Samsung Galaxy Apps
+		m_IsSamsungAppsStoreSelected = module.androidStore == AndroidStore.SamsungApps;
+
+
+		// This selects the GroupId that was created in the Tizen Store for this set of products
+		// An empty or non-matching GroupId here will result in no products available for purchase
+		builder.Configure<ITizenStoreConfiguration>().SetGroupId("100000085616");
+
 
 		#if RECEIPT_VALIDATION
 		validator = new CrossPlatformValidator(GooglePlayTangle.Data(), AppleTangle.Data(), Application.bundleIdentifier);
@@ -257,8 +311,6 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 
 		// Now we're ready to initialize Unity IAP.
 		UnityPurchasing.Initialize(this, builder);
-
-		//Debug.Log ("cash Path:" + Application.persistentDataPath);
 	}
 
 	/// <summary>
@@ -291,17 +343,17 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		m_InteractableSelectable = GetDropdown(); // References any one of the disabled components
 
 		// Show Restore button on Apple platforms
-		if (Application.platform != RuntimePlatform.IPhonePlayer && 
-			Application.platform != RuntimePlatform.OSXPlayer)
+		if (! (Application.platform == RuntimePlatform.IPhonePlayer || 
+			   Application.platform == RuntimePlatform.OSXPlayer ||
+			m_IsSamsungAppsStoreSelected  || m_IsCloudMoolahStoreSelected) )
 		{
 			GetRestoreButton().gameObject.SetActive(false);
 		}
-		// show button on Cloud Moolah platforms, or hide button on others.
-		GetLoginButton ().gameObject.SetActive (m_IsCloudMoolahStoreSelected);
-		GetRegisternButton ().gameObject.SetActive (m_IsCloudMoolahStoreSelected);
-		GetCMRestoreButton ().gameObject.SetActive (m_IsCloudMoolahStoreSelected);
-		GetValidButton ().gameObject.SetActive (m_IsCloudMoolahStoreSelected);
-		GetPayoutButton ().gameObject.SetActive (m_IsCloudMoolahStoreSelected);
+
+		// Show Register, Login, and Validate buttons on CloudMoolah platform
+		GetRegisterButton().gameObject.SetActive(m_IsCloudMoolahStoreSelected);
+		GetLoginButton().gameObject.SetActive(m_IsCloudMoolahStoreSelected);
+		GetValidateButton().gameObject.SetActive(m_IsCloudMoolahStoreSelected);
 
 		foreach (var item in items)
 		{
@@ -322,108 +374,119 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// Initialize my button event handling
 		GetBuyButton().onClick.AddListener(() => { 
 			if (m_PurchaseInProgress == true) {
-				Debug.Log("m_PurchaseInProgress is true");
+				Debug.Log("Please wait, purchasing ...");
 				return;
 			}
-			// Online Game need to login on Cloud Moolah PlatForm.
-			// Stand-alone Game may not need to  login.
-			// our Server need to notice GameServer, So online Game need to login on Cloud Moolah PlatForm.
-			if( m_MoolahExtensions.isLogined==false && m_IsCloudMoolahStoreSelected)
+
+			// For CloudMoolah, games utilizing a connected backend game server may wish to login.
+			// Standalone games may not need to login.
+			if (m_IsCloudMoolahStoreSelected && m_IsLoggedIn == false)
 			{
-				Debug.LogError("Cloud Moolah need to login!");
-				return;
+				Debug.LogWarning("CloudMoolah purchase notifications will not be forwarded server-to-server. Login incomplete.");
 			}
+
 			// Don't need to draw our UI whilst a purchase is in progress.
 			// This is not a requirement for IAP Applications but makes the demo
 			// scene tidier whilst the fake purchase dialog is showing.
 			m_PurchaseInProgress = true;
-
-			m_Controller.InitiatePurchase(m_Controller.products.all[m_SelectedItemIndex],"CloudMoolahPayLoad"); 
-
-
-
+			m_Controller.InitiatePurchase(m_Controller.products.all[m_SelectedItemIndex], "aDemoDeveloperPayload"); 
 		});
 
 		if (GetRestoreButton() != null)
 		{
-			GetRestoreButton().onClick.AddListener(() =>
+			GetRestoreButton().onClick.AddListener(() => {
+				if (m_IsCloudMoolahStoreSelected)
 			{ 
-				m_AppleExtensions.RestoreTransactions(OnTransactionsRestored);
+					if (m_IsLoggedIn == false)
+		{
+						Debug.LogError("CloudMoolah purchase restoration aborted. Login incomplete.");
+		}
+					else
+		{
+						// Restore abnornal transaction identifer, if Client don't receive transaction identifer.
+						m_MoolahExtensions.RestoreTransactionID((RestoreTransactionIDState restoreTransactionIDState) => {
+							Debug.Log("restoreTransactionIDState = " + restoreTransactionIDState.ToString());
+							bool success = 
+								restoreTransactionIDState != RestoreTransactionIDState.RestoreFailed &&
+								restoreTransactionIDState != RestoreTransactionIDState.NotKnown;
+                            OnTransactionsRestored(success);
 			});
 		}
-		//-----CLoud Moolah Extensions Example-----
-		//-----start-----
-		if(GetLoginButton()	!= null)
-		{
-			GetLoginButton ().onClick.AddListener (() => {
-				m_MoolahExtensions.Login (m_CloudMoolahUserName, "CMPassword", LoginSuccessed,LoginFailed);
-			});
-		}
-		if(GetRegisternButton()	!= null)
-		{
-			GetRegisternButton ().onClick.AddListener (() => {
-				//Use Custom password register a Cloud Moolah Acount.
-				m_MoolahExtensions.FastRegister ("CMPassword",RegisterSuccessed, RegisterFailed);
-			});
-		}
-		if(GetCMRestoreButton() != null)
-		{
-			GetCMRestoreButton ().onClick.AddListener (() => {
-				// Online Game need to login on Cloud Moolah PlatForm.
-				// Stand-alone Game may not need to  login.
-				// Restore TransactionID need to login on online Game.   
-				if(m_MoolahExtensions.isLogined==false && m_IsCloudMoolahStoreSelected)
-				{
-					Debug.LogError("Cloud Moolah need to login!");
-					return;
 				}
-				// Restore abnornal transaction identifer, if Client don't receive transaction identifer.
-				m_MoolahExtensions.RestoreTransactionID ((RestoreTransactionIDState restoreTransactionIDState)=>{
-					Debug.Log("RestoreTransactionIDState is " + restoreTransactionIDState.ToString());
-				});
-			});
-		}
-		if(GetPayoutButton() != null)
+				else if (m_IsSamsungAppsStoreSelected)
 		{
-			GetPayoutButton ().onClick.AddListener (() => {
-				//Stand-alone Game need to Payout, change transaction identifer state.
-				m_MoolahExtensions.RequestPayOut(m_CloudMoolahTransationID, (string transationID,RequestPayOutState state, string msg)=>{
-					Debug.Log("requestPayOut TannsationID:" + transationID + ",state:"+ state.ToString() + ",msg:"+msg);
-				} );
-			});
-		}
-		if(GetValidButton() != null)
-		{
-			GetValidButton ().onClick.AddListener (() => {
-				//vaildate receipt true or false.
-				m_MoolahExtensions.ValidateReceipt (m_CloudMoolahTransationID,m_CloudMoolahReceipt, (string transationID,ValidateReceiptState state, string  msg)=>{
-					Debug.Log("validateReceipt TannsationID:" + transationID + ",state:"+ state.ToString() + ",msg:"+msg);
+					m_SamsungExtensions.RestoreTransactions(OnTransactionsRestored);
+				}
+				else
+				{
+					m_AppleExtensions.RestoreTransactions(OnTransactionsRestored);
+				}
 				});
-			});
 		}
-		//-----End-----
 
+		// CloudMoolah requires user registration and supports login to manage the user's
+		// digital wallet. The CM store also supports remote receipt validation.
+
+		// CloudMoolah user registration extension, to establish digital wallet
+		// This is a "fast" registration, requiring only a password. Users may provide 
+		// more detail including an email address during the purchase flow, a "slow" registration, if desired. 
+		if (GetRegisterButton() != null)
+		{
+			GetRegisterButton().onClick.AddListener (() => {
+				// Provide a unique password to establish the user's account.
+				// Typically, connected games (with backend game servers), may already
+				// have available a user-token, which could be supplied here.
+				m_MoolahExtensions.FastRegister("CMPassword", RegisterSucceeded, RegisterFailed);
+			});
+		}
+
+		// CloudMoolah user login extension, to access existing digital wallet
+		if (GetLoginButton() != null)
+		{
+			GetLoginButton().onClick.AddListener (() => {
+				m_MoolahExtensions.Login(m_CloudMoolahUserName, "CMPassword", LoginSucceeded, LoginFailed);
+			});
+		}
+
+		// CloudMoolah remote purchase receipt validation, to determine if the purchase is fraudulent 
+		// NOTE: Remote validation only available for CloudMoolah currently. For local validation, 
+		// see ProcessPurchase.
+		if (GetValidateButton() != null)
+		{
+			GetValidateButton ().onClick.AddListener (() => {
+				// Remotely validate the last transaction and receipt.
+				m_MoolahExtensions.ValidateReceipt(m_LastTransationID, m_LastReceipt, 
+					(string transactionID, ValidateReceiptState state, string message) => {
+						Debug.Log("ValidtateReceipt transactionID:" + transactionID 
+							+ ", state:" + state.ToString() + ", message:" + message);
+				});
+			});
+		}
 	}
-	//---------------------login and register callBack--------------------------
-	//-----------------------------start------------------------------------	
-	public void LoginSuccessed (string token)
+
+	public void LoginSucceeded (string token)
 	{
-		Debug.Log ("loginSuccessed: token is " + token);
+		Debug.Log ("LoginSucceeded: token = " + token);
+		m_IsLoggedIn = true;
 	}
-	public void LoginFailed (LoginError error, string errorMsg)
+
+	public void LoginFailed (LoginError error, string errorMessage)
 	{
-		Debug.Log ("loginFailed: type is " + error.ToString () + " ! msg is " + errorMsg);
+		Debug.Log ("LoginFailed: error = " + error.ToString() + ", errorMessage = " + errorMessage);
+		m_IsLoggedIn = false;
 	}
-	public void RegisterSuccessed (string cmUserName)
+
+	public void RegisterSucceeded(string cmUserName)
 	{
+		Debug.Log ("RegisterSucceeded: cmUserName = " + cmUserName);
 		m_CloudMoolahUserName = cmUserName;
-		Debug.Log ("registerSuccessed : cmUserName is " + cmUserName);
 	}
-	public void RegisterFailed (FastRegisterError error, string errorMsg)
+
+	public void RegisterFailed (FastRegisterError error, string errorMessage)
 	{
-		Debug.Log ("registerFailed :RegisterError is " + error.ToString() + ", errorMsg is " + errorMsg);
+		Debug.Log ("RegisterFailed: error = " + error.ToString() + ", errorMessage = " + errorMessage);
 	}
-	//----------------------------end---------------------------------------	
+
 	public void UpdateHistoryUI()
 	{
 		if (m_Controller == null)
@@ -465,8 +528,8 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 			}
 			GetBuyButton().interactable = interactable;
 			GetDropdown().interactable = interactable;
+			GetRegisterButton().interactable = interactable;
 			GetLoginButton().interactable = interactable;
-			GetRegisternButton().interactable = interactable;
 		}
 	}
 
@@ -493,29 +556,22 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 	{
 		return GetButton ("Restore");
 	}
-	// Cloud Moolah Platform Button
-	//------start------
+
+	private Button GetRegisterButton()
+	{
+		return GetButton ("Register");
+	}
+
 	private Button GetLoginButton()
 	{
 		return GetButton ("Login");
 	}
-	private Button GetRegisternButton()
+
+	private Button GetValidateButton()
 	{
-		return GetButton ("Register");
+		return GetButton ("Validate");
 	}
-	private Button GetPayoutButton()
-	{
-		return GetButton ("PayOut");
-	}
-	private Button GetCMRestoreButton()
-	{
-		return GetButton ("cmRestore");
-	}
-	private Button GetValidButton()
-	{
-		return GetButton ("Valid");
-	}
-	//------end------
+
 	private  Button GetButton(string buttonName)
 	{
 		GameObject obj = GameObject.Find(buttonName);
@@ -528,6 +584,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 			return null;
 		}
 	}
+
 	private Text GetText(bool right)
 	{
 		var which = right ? "TextR" : "TextL";

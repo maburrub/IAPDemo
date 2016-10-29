@@ -1,5 +1,41 @@
-## [?.?.?] - ????
+## [1.9.0] - 2016-10-31
 ### Added
+- CloudMoolah support. CloudMoolah website [here](http://www.cloudmoolah.com). Preliminary store guide available [here](https://docs.google.com/document/d/1T9CEZe6eNCwgWkq7lLwrEw7rpSbu3_EjcUVgJJL6xA0/edit). Preliminary configuration document available [here](https://docs.google.com/document/d/1dpc3zqsyROeFUVBy9W9pc0sskCPyfhcRnsGxtyITmyQ/edit).
+- [Beta] Codeless IAP tools. Implement IAP by adding IAP Buttons to your project (Window > Unity IAP > Create IAP Button) and configure your catalog of IAP products without writing a line of code (Window > Unity IAP > IAP Catalog). Preliminary documentation is available [here](https://docs.google.com/document/d/1597oxEI1UkZ1164j1lR7s-2YIrJyidbrfNwTfSI1Ksc/edit).
+- [Beta] Google Play - Support for Daydream VR. Requires Unity 5.4+ "GVR" Technical Preview, enabling VR, and including the Daydream SDK. Additional details [here](https://unity3d.com/partners/google/daydream).
+- Samsung Galaxy Store - Added support for receiving auto-recurring subscriptions
+- Highlights chosen Android store in menu Window > Unity IAP > Android
+
+### Fixed
+- Remove the menu item to select Android store at runtime
+- Fix an exception that occurred when parsing prices while culture was set to use commas as a decimal separator
+
+## [1.8.3] - 2016-10-13
+### Fixed
+- iOS crash when calling PurchasingManager.ConfirmPendingPurchase with a product that does not have a transaction ID
+- Ensure tvOS build uses correct stub DLL
+- Support transaction receipt logging for all store platforms. Requires corresponding Unity Engine: currently unreleased Unity 5.3/5.4 patch, or Unity 5.5.0b7+.
+
+## [1.8.2] - 2016-09-23
+### Fixed
+- Tizen Store - Product list not delivered to new app or new user
+
+## [1.8.1] - 2016-08-30
+### Fixed
+- Windows Store - Windows App Compatibility Kit Supported API failure with exposure of Tizen API.
+- Tizen Store - Added sample products and GroupId to `IAPDemo.cs`
+
+## [1.8.0] - 2016-08-23
+### Added
+- Tizen Store support. Preliminary documentation is available [here](https://docs.google.com/document/d/1A2TidgeV4lY16IcjdU7lX4EIvx6NNfONaph12iT8KyY).
+
+### Fixed
+- Google Play - Promo code redemptions not being detected whilst the App is running.
+- Google Play - Guard against spurious SecurityException (additional details [here](https://github.com/googlesamples/android-play-billing/issues/26).)
+
+## [1.7.0] - 2016-08-07
+### Added
+- Samsung Galaxy store support. Preliminary documentation is available [here](https://docs.google.com/document/d/1kUq-AHKyJftUA68xr44mrp7gs_MNxNiQ693s0b7qDdM).
 - Google Play - failed purchases - the [Google Play server response code](https://developer.android.com/google/play/billing/billing_reference.html#billing-codes) is now supplied as the [PurchaseFailedEventArgs.message](https://docs.unity3d.com/ScriptReference/Purchasing.PurchaseFailedEventArgs-message.html) property for failed purchases.
 - Android - it is now possible to choose the store implementation to use at runtime.
     - Make a build containing all store implementations by choosing Window > Unity IAP > Android > "Select store at runtime"
@@ -10,8 +46,11 @@ var module = StandardPurchasingModule.Instance(AndroidStore.AmazonAppStore);
 ```
 
 ### Fixed
-- Google Play - fixed non fatal 'IllegalArgumentException: Receiver not registered' warning appearing in crashlogs.
 - Google Play - PurchaseFailureReason.ItemUnavailable and PurchaseFailureReason.BillingUnavailable being reported as 'Unknown' errors.
+
+## [1.6.1] - 2016-07-18
+### Fixed
+- Google Play - fixed non fatal 'IllegalArgumentException: Receiver not registered' warning appearing in crashlogs.
 
 ## [1.6.0] - 2016-7-7
 ### Added
