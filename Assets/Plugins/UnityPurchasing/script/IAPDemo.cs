@@ -240,7 +240,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		builder.Configure<IMoolahConfiguration>().hashKey = "cc";
 		// This enables the CloudMoolah test mode for local testing.
 		// You would remove this, or set to CloudMoolahMode.Production, before building your release package.
-		builder.Configure<IMoolahConfiguration>().SetMode(CloudMoolahMode.AlwaysSucceed);
+		builder.Configure<IMoolahConfiguration>().SetMode(CloudMoolahMode.Production);
 		// This records whether we are using Cloud Moolah IAP. 
 		// Cloud Moolah requires logging in to access your Digital Wallet, so: 
 		// A) IAPDemo (this) displays the Cloud Moolah GUI button for Cloud Moolah
