@@ -123,7 +123,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 
 		#if RECEIPT_VALIDATION
 		// Local validation is available for GooglePlay and Apple stores
-		if (Application.platform == RuntimePlatform.Android ||
+		if (m_IsGooglePlayStoreSelected ||
 			Application.platform == RuntimePlatform.IPhonePlayer ||
 			Application.platform == RuntimePlatform.OSXPlayer) {
 			try {
