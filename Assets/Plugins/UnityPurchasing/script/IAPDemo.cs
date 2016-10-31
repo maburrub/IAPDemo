@@ -29,17 +29,20 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 	private IMoolahExtension m_MoolahExtensions;
 	private ISamsungAppsExtensions m_SamsungExtensions;
 
-	private int m_SelectedItemIndex = -1; // -1 == no product
-	private bool m_PurchaseInProgress;
-
+	#pragma warning disable 0414
+	private bool m_IsGooglePlayStoreSelected;
+	#pragma warning restore 0414
+	private bool m_IsSamsungAppsStoreSelected;
 	private bool m_IsCloudMoolahStoreSelected; 
+
 	private string m_LastTransationID;
 	private string m_LastReceipt;
 	private string m_CloudMoolahUserName;
 	private bool m_IsLoggedIn = false;
 
+	private int m_SelectedItemIndex = -1; // -1 == no product
+	private bool m_PurchaseInProgress;
 	private Selectable m_InteractableSelectable; // Optimization used for UI state management
-	private bool m_IsSamsungAppsStoreSelected;
 
 	#if RECEIPT_VALIDATION
 	private CrossPlatformValidator validator;
@@ -120,7 +123,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 
 		#if RECEIPT_VALIDATION
 		// Local validation is available for GooglePlay and Apple stores
-		if (Application.platform == RuntimePlatform.Android ||
+		if (m_IsGooglePlayStoreSelected ||
 			Application.platform == RuntimePlatform.IPhonePlayer ||
 			Application.platform == RuntimePlatform.OSXPlayer) {
 			try {
@@ -234,6 +237,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// You would remove this before building your release package.
 		builder.Configure<IMicrosoftConfiguration>().useMockBillingSystem = false;
 		builder.Configure<IGooglePlayConfiguration>().SetPublicKey("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2O/9/H7jYjOsLFT/uSy3ZEk5KaNg1xx60RN7yWJaoQZ7qMeLy4hsVB3IpgMXgiYFiKELkBaUEkObiPDlCxcHnWVlhnzJBvTfeCPrYNVOOSJFZrXdotp5L0iS2NVHjnllM+HA1M0W2eSNjdYzdLmZl1bxTpXa4th+dVli9lZu7B7C2ly79i/hGTmvaClzPBNyX+Rtj7Bmo336zh2lYbRdpD5glozUq+10u91PMDPH+jqhx10eyZpiapr8dFqXl5diMiobknw9CgcjxqMTVBQHK6hS0qYKPmUDONquJn280fBs1PTeA6NMG03gb9FLESKFclcuEZtvM8ZwMMRxSLA9GwIDAQAB");
+		m_IsGooglePlayStoreSelected = Application.platform == RuntimePlatform.Android && module.androidStore == AndroidStore.GooglePlay;
 		
 		// CloudMoolah Configuration setings 
 		// All games must set the configuration. the configuration need to apply on the CloudMoolah Portal.
