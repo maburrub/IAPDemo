@@ -314,6 +314,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		#endif
 
 		//This should not cause any exceptions in android
+		Debug.Log("-------------- Setting locale to fr-FR");
 		System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("fr-FR");
 
 		// Now we're ready to initialize Unity IAP.
