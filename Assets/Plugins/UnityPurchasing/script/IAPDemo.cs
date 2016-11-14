@@ -115,6 +115,9 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		Debug.Log("Receipt: " + e.purchasedProduct.receipt);
 
 		m_LastTransationID = e.purchasedProduct.transactionID;
+
+		Debug.Log("-------------- m_LastTransationID = " + m_LastTransationID);
+
 		m_LastReceipt = e.purchasedProduct.receipt;
 		m_PurchaseInProgress = false;
 
