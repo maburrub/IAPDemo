@@ -1,3 +1,2 @@
-This branch builds a test app in which IAP always pass by calling the following:
-
-builder.Configure<ISamsungAppsConfiguration> ().SetMode(SamsungAppsMode.AlwaysPass);
+Calling:
+var module = StandardPurchasingModule.Instance (AndroidStore.SamsungApps);
