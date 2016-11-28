@@ -263,7 +263,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 				{"com.eight.bit.avenue.amorcam.100coins.3", GooglePlay.Name},
 				{"com.eight.bit.avenue.100coins.1", WindowsStore.Name},
 				{"100.gold.coins", SamsungApps.Name},
-				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.az", AmazonApps.Name},
+				{"gold.100", AmazonApps.Name},
 				{"000000596581", TizenStore.Name},
 			    {"com.ee", MoolahAppStore.Name}
 			});
@@ -275,7 +275,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 				{"com.eight.bit.avenue.amorcam.sword.3", GooglePlay.Name},
 				{"com.eight.bit.avenue.sword.1", WindowsStore.Name},
 				{"sword", SamsungApps.Name},
-				{"com.unity3d.unityiap.unityiapdemo.sword.az", AmazonApps.Name},
+				{"power.jump", AmazonApps.Name},
 				{"000000596583", TizenStore.Name}
 			});
 
@@ -286,12 +286,12 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 				{"com.eight.bit.avenue.amorcam.subscription.3", GooglePlay.Name},
 				{"com.eight.bit.avenue.subscription.1", WindowsStore.Name},
 				{"subscription", SamsungApps.Name},
-				{"com.unity3d.unityiap.unityiapdemo.subscription.annually", AmazonApps.Name}
+				{"power.vip", AmazonApps.Name}
 			});
 
 		// Write Amazon's JSON description of our products to storage when using Amazon's local sandbox.
 		// This should be removed from a production build.
-		builder.Configure<IAmazonConfiguration>().WriteSandboxJSON(builder.products);
+		//builder.Configure<IAmazonConfiguration>().WriteSandboxJSON(builder.products);
 
 		// This enables simulated purchase success for Samsung IAP.
 		// You would remove this, or set to SamsungAppsMode.Production, before building your release package.
