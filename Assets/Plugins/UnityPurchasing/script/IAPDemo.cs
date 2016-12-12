@@ -1,7 +1,7 @@
 #if UNITY_ANDROID || UNITY_IPHONE || UNITY_STANDALONE_OSX || UNITY_TVOS
 // You must obfuscate your secrets using Window > Unity IAP > Receipt Validation Obfuscator
 // before receipt validation will compile in this sample.
-#define RECEIPT_VALIDATION
+// #define RECEIPT_VALIDATION
 #endif
 
 using System;
@@ -28,6 +28,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 	private IAppleExtensions m_AppleExtensions;
 	private IMoolahExtension m_MoolahExtensions;
 	private ISamsungAppsExtensions m_SamsungExtensions;
+	private IMicrosoftExtensions m_MicrosoftExtensions;
 
 	#pragma warning disable 0414
 	private bool m_IsGooglePlayStoreSelected;
@@ -57,6 +58,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		m_AppleExtensions = extensions.GetExtension<IAppleExtensions> ();
 		m_SamsungExtensions = extensions.GetExtension<ISamsungAppsExtensions> ();
 		m_MoolahExtensions = extensions.GetExtension<IMoolahExtension> ();
+		m_MicrosoftExtensions = extensions.GetExtension<IMicrosoftExtensions> ();
 
 		InitUI(controller.products.all);
 
@@ -125,31 +127,32 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// Local validation is available for GooglePlay and Apple stores
 		if (m_IsGooglePlayStoreSelected ||
 			Application.platform == RuntimePlatform.IPhonePlayer ||
-			Application.platform == RuntimePlatform.OSXPlayer) {
+			Application.platform == RuntimePlatform.OSXPlayer ||
+			Application.platform == RuntimePlatform.tvOS) {
 			try {
 				var result = validator.Validate(e.purchasedProduct.receipt);
-				Debug.Log("-------------- Receipt is valid. Contents:");
+				Debug.Log("Receipt is valid. Contents:");
 				foreach (IPurchaseReceipt productReceipt in result) {
-					Debug.Log("-------------- productReceipt.productID = " + productReceipt.productID);
-					Debug.Log("-------------- productReceipt.purchaseDate = " + productReceipt.purchaseDate);
-					Debug.Log("-------------- productReceipt.transactionID = " + productReceipt.transactionID);
+					Debug.Log(productReceipt.productID);
+					Debug.Log(productReceipt.purchaseDate);
+					Debug.Log(productReceipt.transactionID);
 
 					GooglePlayReceipt google = productReceipt as GooglePlayReceipt;
 					if (null != google) {
-						Debug.Log("-------------- google.purchaseState = " + google.purchaseState);
-						Debug.Log("-------------- google.purchaseToken = " + google.purchaseToken);
+						Debug.Log(google.purchaseState);
+						Debug.Log(google.purchaseToken);
 					}
 
 					AppleInAppPurchaseReceipt apple = productReceipt as AppleInAppPurchaseReceipt;
 					if (null != apple) {
-						Debug.Log("-------------- apple.originalTransactionIdentifier = " + apple.originalTransactionIdentifier);
-						Debug.Log("-------------- apple.subscriptionExpirationDate = " + apple.subscriptionExpirationDate);
-						Debug.Log("-------------- apple.cancellationDate = " + apple.cancellationDate);
-						Debug.Log("-------------- apple.quantity = " + apple.quantity);
+						Debug.Log(apple.originalTransactionIdentifier);
+						Debug.Log(apple.subscriptionExpirationDate);
+						Debug.Log(apple.cancellationDate);
+						Debug.Log(apple.quantity);
 					}
 				}
 			} catch (IAPSecurityException) {
-				Debug.Log("-------------- Invalid receipt, not unlocking content");
+				Debug.Log("Invalid receipt, not unlocking content");
 				return PurchaseProcessingResult.Complete;
 			}
 		}
@@ -232,7 +235,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 
 		// This enables the Microsoft IAP simulator for local testing.
 		// You would remove this before building your release package.
-		builder.Configure<IMicrosoftConfiguration>().useMockBillingSystem = false;
+		builder.Configure<IMicrosoftConfiguration>().useMockBillingSystem = true;
 		builder.Configure<IGooglePlayConfiguration>().SetPublicKey("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2O/9/H7jYjOsLFT/uSy3ZEk5KaNg1xx60RN7yWJaoQZ7qMeLy4hsVB3IpgMXgiYFiKELkBaUEkObiPDlCxcHnWVlhnzJBvTfeCPrYNVOOSJFZrXdotp5L0iS2NVHjnllM+HA1M0W2eSNjdYzdLmZl1bxTpXa4th+dVli9lZu7B7C2ly79i/hGTmvaClzPBNyX+Rtj7Bmo336zh2lYbRdpD5glozUq+10u91PMDPH+jqhx10eyZpiapr8dFqXl5diMiobknw9CgcjxqMTVBQHK6hS0qYKPmUDONquJn280fBs1PTeA6NMG03gb9FLESKFclcuEZtvM8ZwMMRxSLA9GwIDAQAB");
 		m_IsGooglePlayStoreSelected = Application.platform == RuntimePlatform.Android && module.androidStore == AndroidStore.GooglePlay;
 
@@ -256,39 +259,31 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// iOS stores.
 		// So on the Mac App store our products have different identifiers,
 		// and we tell Unity IAP this by using the IDs class.
-		builder.AddProduct("coins", ProductType.Consumable, new IDs
+		builder.AddProduct("100.gold.coins", ProductType.Consumable, new IDs
 		{
-				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.6", AppleAppStore.Name},
-				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.7", MacAppStore.Name},
-				{"com.eight.bit.avenue.amorcam.100coins.3", GooglePlay.Name},
-				{"com.eight.bit.avenue.100coins.1", WindowsStore.Name},
-				{"100.gold.coins", SamsungApps.Name},
-				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.az", AmazonApps.Name},
-				{"000000596581", TizenStore.Name},
-			    {"com.ee", MoolahAppStore.Name}
+			{"100.gold.coins.mac", MacAppStore.Name},
+			{"000000596586", TizenStore.Name},
+			{"com.ff", MoolahAppStore.Name},
+		});
+
+		builder.AddProduct("500.gold.coins", ProductType.Consumable, new IDs
+		{
+			{"500.gold.coins.mac", MacAppStore.Name},
+			{"000000596581", TizenStore.Name},
+			{"com.ee", MoolahAppStore.Name},
 		});
 
 		builder.AddProduct("sword", ProductType.NonConsumable, new IDs
 		{
-				{"com.unity3d.unityiap.unityiapdemo.sword.6", AppleAppStore.Name},
-				{"com.unity3d.unityiap.unityiapdemo.sword.7", MacAppStore.Name},
-				{"com.eight.bit.avenue.amorcam.sword.3", GooglePlay.Name},
-				{"com.eight.bit.avenue.sword.1", WindowsStore.Name},
-				{"sword", SamsungApps.Name},
-				{"com.unity3d.unityiap.unityiapdemo.sword.az", AmazonApps.Name},
-				{"000000596583", TizenStore.Name}
+			{"sword.mac", MacAppStore.Name},
+			{"000000596583", TizenStore.Name},
 		});
 
 		builder.AddProduct("subscription", ProductType.Subscription, new IDs
 		{
-				{"com.unity3d.unityiap.unityiapdemo.subscription", AppleAppStore.Name},
-				{"com.unity3d.unityiap.unityiapdemo.subscription.7", MacAppStore.Name},
-				{"com.eight.bit.avenue.amorcam.subscription.3", GooglePlay.Name},
-				{"com.eight.bit.avenue.subscription.1", WindowsStore.Name},
-				{"subscription", SamsungApps.Name},
-				{"com.unity3d.unityiap.unityiapdemo.subscription.annually", AmazonApps.Name}
+			{"subscription.mac", MacAppStore.Name}
 		});
-
+		
 		// Write Amazon's JSON description of our products to storage when using Amazon's local sandbox.
 		// This should be removed from a production build.
 		builder.Configure<IAmazonConfiguration>().WriteSandboxJSON(builder.products);
@@ -296,12 +291,11 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// This enables simulated purchase success for Samsung IAP.
 		// You would remove this, or set to SamsungAppsMode.Production, before building your release package.
 		builder.Configure<ISamsungAppsConfiguration>().SetMode(SamsungAppsMode.AlwaysSucceed);
-		builder.Configure<ISamsungAppsConfiguration>().SetMode(SamsungAppsMode.AlwaysFail);
 		// This records whether we are using Samsung IAP. Currently ISamsungAppsExtensions.RestoreTransactions
 		// displays a blocking Android Activity, so: 
 		// A) Unity IAP does not automatically restore purchases on Samsung Galaxy Apps
 		// B) IAPDemo (this) displays the "Restore" GUI button for Samsung Galaxy Apps
-		m_IsSamsungAppsStoreSelected = module.androidStore == AndroidStore.SamsungApps;
+		m_IsSamsungAppsStoreSelected = Application.platform == RuntimePlatform.Android && module.androidStore == AndroidStore.SamsungApps;
 
 
 		// This selects the GroupId that was created in the Tizen Store for this set of products
@@ -346,9 +340,13 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// See also UpdateInteractable()
 		m_InteractableSelectable = GetDropdown(); // References any one of the disabled components
 
-		// Show Restore button on Apple platforms
-		if (! (Application.platform == RuntimePlatform.IPhonePlayer || 
+		// Show Restore button on supported platforms
+		if (! (Application.platform == RuntimePlatform.IPhonePlayer ||
 			   Application.platform == RuntimePlatform.OSXPlayer ||
+			   Application.platform == RuntimePlatform.tvOS || 
+			   Application.platform == RuntimePlatform.WSAPlayerX86 ||
+			   Application.platform == RuntimePlatform.WSAPlayerX64 ||
+			   Application.platform == RuntimePlatform.WSAPlayerARM ||
 			m_IsSamsungAppsStoreSelected  || m_IsCloudMoolahStoreSelected) )
 		{
 			GetRestoreButton().gameObject.SetActive(false);
@@ -400,13 +398,13 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		{
 			GetRestoreButton().onClick.AddListener(() => {
 				if (m_IsCloudMoolahStoreSelected)
-			{ 
+				{
 					if (m_IsLoggedIn == false)
 					{
 						Debug.LogError("CloudMoolah purchase restoration aborted. Login incomplete.");
 					}
 					else
-			{ 
+					{
 						// Restore abnornal transaction identifer, if Client don't receive transaction identifer.
 						m_MoolahExtensions.RestoreTransactionID((RestoreTransactionIDState restoreTransactionIDState) => {
 							Debug.Log("restoreTransactionIDState = " + restoreTransactionIDState.ToString());
@@ -420,6 +418,12 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 				else if (m_IsSamsungAppsStoreSelected)
 				{
 					m_SamsungExtensions.RestoreTransactions(OnTransactionsRestored);
+				}
+				else if (Application.platform == RuntimePlatform.WSAPlayerX86 ||
+						 Application.platform == RuntimePlatform.WSAPlayerX64 ||
+						 Application.platform == RuntimePlatform.WSAPlayerARM)
+				{
+					m_MicrosoftExtensions.RestoreTransactions();
 				}
 				else
 				{
@@ -471,13 +475,13 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 	public void LoginResult (LoginResultState state, string errorMsg)
 	{
 		if(state == LoginResultState.LoginSucceed)
-	{
-		m_IsLoggedIn = true;
-	}
+		{
+			m_IsLoggedIn = true;
+		}
 		else
-	{
-		m_IsLoggedIn = false;
-	}
+		{
+			m_IsLoggedIn = false;
+		}	
 		Debug.Log ("LoginResult: state: " + state.ToString () + " errorMsg: " + errorMsg);
 	}
 
