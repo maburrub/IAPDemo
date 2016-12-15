@@ -28,6 +28,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 	private IAppleExtensions m_AppleExtensions;
 	private IMoolahExtension m_MoolahExtensions;
 	private ISamsungAppsExtensions m_SamsungExtensions;
+	private IMicrosoftExtensions m_MicrosoftExtensions;
 
 	#pragma warning disable 0414
 	private bool m_IsGooglePlayStoreSelected;
@@ -57,6 +58,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		m_AppleExtensions = extensions.GetExtension<IAppleExtensions> ();
 		m_SamsungExtensions = extensions.GetExtension<ISamsungAppsExtensions> ();
 		m_MoolahExtensions = extensions.GetExtension<IMoolahExtension> ();
+		m_MicrosoftExtensions = extensions.GetExtension<IMicrosoftExtensions> ();
 
 		InitUI(controller.products.all);
 
@@ -125,7 +127,8 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// Local validation is available for GooglePlay and Apple stores
 		if (m_IsGooglePlayStoreSelected ||
 			Application.platform == RuntimePlatform.IPhonePlayer ||
-			Application.platform == RuntimePlatform.OSXPlayer) {
+			Application.platform == RuntimePlatform.OSXPlayer ||
+			Application.platform == RuntimePlatform.tvOS) {
 			try {
 				var result = validator.Validate(e.purchasedProduct.receipt);
 				Debug.Log("-------------- Receipt is valid. Contents:");
@@ -235,7 +238,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		builder.Configure<IMicrosoftConfiguration>().useMockBillingSystem = false;
 		builder.Configure<IGooglePlayConfiguration>().SetPublicKey("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2O/9/H7jYjOsLFT/uSy3ZEk5KaNg1xx60RN7yWJaoQZ7qMeLy4hsVB3IpgMXgiYFiKELkBaUEkObiPDlCxcHnWVlhnzJBvTfeCPrYNVOOSJFZrXdotp5L0iS2NVHjnllM+HA1M0W2eSNjdYzdLmZl1bxTpXa4th+dVli9lZu7B7C2ly79i/hGTmvaClzPBNyX+Rtj7Bmo336zh2lYbRdpD5glozUq+10u91PMDPH+jqhx10eyZpiapr8dFqXl5diMiobknw9CgcjxqMTVBQHK6hS0qYKPmUDONquJn280fBs1PTeA6NMG03gb9FLESKFclcuEZtvM8ZwMMRxSLA9GwIDAQAB");
 		m_IsGooglePlayStoreSelected = Application.platform == RuntimePlatform.Android && module.androidStore == AndroidStore.GooglePlay;
-		
+
 		// CloudMoolah Configuration setings 
 		// All games must set the configuration. the configuration need to apply on the CloudMoolah Portal.
 		// CloudMoolah APP Key
@@ -250,14 +253,14 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// A) IAPDemo (this) displays the Cloud Moolah GUI button for Cloud Moolah
 		m_IsCloudMoolahStoreSelected = Application.platform == RuntimePlatform.Android && module.androidStore == AndroidStore.CloudMoolah;
 
-    // Define our products.
+		// Define our products.
 		// In this case our products have the same identifier across all the App stores,
 		// except on the Mac App store where product IDs cannot be reused across both Mac and
 		// iOS stores.
 		// So on the Mac App store our products have different identifiers,
 		// and we tell Unity IAP this by using the IDs class.
 		builder.AddProduct("coins", ProductType.Consumable, new IDs
-			{
+		{
 				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.6", AppleAppStore.Name},
 				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.7", MacAppStore.Name},
 				{"com.eight.bit.avenue.amorcam.100coins.3", GooglePlay.Name},
@@ -266,10 +269,10 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.az", AmazonApps.Name},
 				{"000000596581", TizenStore.Name},
 			    {"com.ee", MoolahAppStore.Name}
-			});
+		});
 
 		builder.AddProduct("sword", ProductType.NonConsumable, new IDs
-			{
+		{
 				{"com.unity3d.unityiap.unityiapdemo.sword.6", AppleAppStore.Name},
 				{"com.unity3d.unityiap.unityiapdemo.sword.7", MacAppStore.Name},
 				{"com.eight.bit.avenue.amorcam.sword.3", GooglePlay.Name},
@@ -277,18 +280,18 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 				{"sword", SamsungApps.Name},
 				{"com.unity3d.unityiap.unityiapdemo.sword.az", AmazonApps.Name},
 				{"000000596583", TizenStore.Name}
-			});
+		});
 
 		builder.AddProduct("subscription", ProductType.Subscription, new IDs
-			{
+		{
 				{"com.unity3d.unityiap.unityiapdemo.subscription", AppleAppStore.Name},
 				{"com.unity3d.unityiap.unityiapdemo.subscription.7", MacAppStore.Name},
 				{"com.eight.bit.avenue.amorcam.subscription.3", GooglePlay.Name},
 				{"com.eight.bit.avenue.subscription.1", WindowsStore.Name},
 				{"subscription", SamsungApps.Name},
 				{"com.unity3d.unityiap.unityiapdemo.subscription.annually", AmazonApps.Name}
-			});
-		
+		});
+
 		// Write Amazon's JSON description of our products to storage when using Amazon's local sandbox.
 		// This should be removed from a production build.
 		builder.Configure<IAmazonConfiguration>().WriteSandboxJSON(builder.products);
@@ -301,7 +304,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// displays a blocking Android Activity, so: 
 		// A) Unity IAP does not automatically restore purchases on Samsung Galaxy Apps
 		// B) IAPDemo (this) displays the "Restore" GUI button for Samsung Galaxy Apps
-		m_IsSamsungAppsStoreSelected = module.androidStore == AndroidStore.SamsungApps;
+		m_IsSamsungAppsStoreSelected = Application.platform == RuntimePlatform.Android && module.androidStore == AndroidStore.SamsungApps;
 
 
 		// This selects the GroupId that was created in the Tizen Store for this set of products
@@ -346,9 +349,13 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// See also UpdateInteractable()
 		m_InteractableSelectable = GetDropdown(); // References any one of the disabled components
 
-		// Show Restore button on Apple platforms
+		// Show Restore button on supported platforms
 		if (! (Application.platform == RuntimePlatform.IPhonePlayer || 
 			   Application.platform == RuntimePlatform.OSXPlayer ||
+			   Application.platform == RuntimePlatform.tvOS || 
+			   Application.platform == RuntimePlatform.WSAPlayerX86 ||
+			   Application.platform == RuntimePlatform.WSAPlayerX64 ||
+			   Application.platform == RuntimePlatform.WSAPlayerARM ||
 			m_IsSamsungAppsStoreSelected  || m_IsCloudMoolahStoreSelected) )
 		{
 			GetRestoreButton().gameObject.SetActive(false);
@@ -420,6 +427,12 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 				else if (m_IsSamsungAppsStoreSelected)
 				{
 					m_SamsungExtensions.RestoreTransactions(OnTransactionsRestored);
+				}
+				else if (Application.platform == RuntimePlatform.WSAPlayerX86 ||
+						 Application.platform == RuntimePlatform.WSAPlayerX64 ||
+						 Application.platform == RuntimePlatform.WSAPlayerARM)
+				{
+					m_MicrosoftExtensions.RestoreTransactions();
 				}
 				else
 				{
