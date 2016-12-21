@@ -1,7 +1,6 @@
 ## [1.9.3] - ????-??-??
 ### Added
 - Build error Editor diagnostic log when IAP Service disabled
-- Unity IAP self updater and installer to stay up to date, and avoid initial-install IAP Service disablement errors
 
 ## [1.9.2] - 2016-11-29
 ### Fixed
