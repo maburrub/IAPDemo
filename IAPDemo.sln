@@ -1,9 +1,9 @@
+﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2008
-
-Project("{D8C7451A-E2FB-A7AD-D7D9-9C0AF9A94CE7}") = "IAPDemo", "Assembly-CSharp-firstpass.csproj", "{78DE7086-24D0-043B-E8A6-89786E9DA69B}"
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IAPDemo", "Assembly-CSharp-firstpass.csproj", "{78DE7086-24D0-043B-E8A6-89786E9DA69B}"
 EndProject
-Project("{D8C7451A-E2FB-A7AD-D7D9-9C0AF9A94CE7}") = "IAPDemo", "Assembly-CSharp-Editor-firstpass.csproj", "{EFDF2076-702B-D770-DD82-DC2AD63DC3B3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IAPDemo", "Assembly-CSharp-Editor-firstpass.csproj", "{EFDF2076-702B-D770-DD82-DC2AD63DC3B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
