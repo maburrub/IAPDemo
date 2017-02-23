@@ -102,6 +102,9 @@
  <Reference Include="Editor">
  <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityPurchasing/Bin/Editor.dll</HintPath>
  </Reference>
+ <Reference Include="Purchasing.Common">
+ <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityPurchasing/Bin/Purchasing.Common.dll</HintPath>
+ </Reference>
  <Reference Include="Security">
  <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityPurchasing/Bin/Security.dll</HintPath>
  </Reference>
@@ -140,9 +143,6 @@
  </Reference>
  <Reference Include="UnityEditor.OSXStandalone.Extensions">
  <HintPath>/Applications/Unity5.5.1p4/Unity.app/Contents/PlaybackEngines/macstandalonesupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
- </Reference>
- <Reference Include="Purchasing.Common">
- <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityPurchasing/Bin/Purchasing.Common.dll</HintPath>
  </Reference>
   </ItemGroup>
   <ItemGroup>
