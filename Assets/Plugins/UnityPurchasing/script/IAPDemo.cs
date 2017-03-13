@@ -1,7 +1,7 @@
 #if UNITY_ANDROID || UNITY_IPHONE || UNITY_STANDALONE_OSX || UNITY_TVOS
 // You must obfuscate your secrets using Window > Unity IAP > Receipt Validation Obfuscator
 // before receipt validation will compile in this sample.
-// #define RECEIPT_VALIDATION
+#define RECEIPT_VALIDATION
 #endif
 
 using System;
