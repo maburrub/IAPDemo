@@ -55,6 +55,9 @@
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.Advertisements">
+      <HintPath>Library\UnityAssemblies\UnityEngine.Advertisements.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEditor.Advertisements">
       <HintPath>Library\UnityAssemblies\UnityEditor.Advertisements.dll</HintPath>
     </Reference>
@@ -130,11 +133,11 @@
     <Reference Include="Mono.Cecil">
       <HintPath>Library\UnityAssemblies\Mono.Cecil.dll</HintPath>
     </Reference>
-    <Reference Include="Common">
-      <HintPath>Assets\Plugins\UnityPurchasing\Bin\Common.dll</HintPath>
-    </Reference>
     <Reference Include="Editor">
       <HintPath>Assets\Plugins\UnityPurchasing\Bin\Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Purchasing.Common">
+      <HintPath>Assets\Plugins\UnityPurchasing\Bin\Purchasing.Common.dll</HintPath>
     </Reference>
     <Reference Include="Security">
       <HintPath>Assets\Plugins\UnityPurchasing\Bin\Security.dll</HintPath>
