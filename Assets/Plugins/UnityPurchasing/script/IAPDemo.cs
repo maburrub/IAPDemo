@@ -264,13 +264,12 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 
 		builder.AddProduct("sword", ProductType.Consumable, new IDs
 			{
-				{"com.unity3d.unityiap.unityiapdemo.sword.6", AppleAppStore.Name},
-				{"com.unity3d.unityiap.unityiapdemo.sword.7", MacAppStore.Name},
-				{"com.eight.bit.avenue.amorcam.sword.3", GooglePlay.Name},
-				{"com.eight.bit.avenue.sword.1", WindowsStore.Name},
-				{"sword", SamsungApps.Name},
-				{"com.unity3d.unityiap.unityiapdemo.sword.az", AmazonApps.Name},
-				{"000000596583", TizenStore.Name}
+				{"com.eight.bit.avenue.amorcam.sword.3", GooglePlay.Name}
+			});
+
+		builder.AddProduct("coins", ProductType.Consumable, new IDs
+			{
+				{"com.unity3d.unityiap.unityiapdemo.coins.2", GooglePlay.Name}
 			});
 
 		// Write Amazon's JSON description of our products to storage when using Amazon's local sandbox.
@@ -294,7 +293,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 
 
 		#if RECEIPT_VALIDATION
-		validator = new CrossPlatformValidator(GooglePlayTangle.Data(), AppleTangle.Data(), Application.bundleIdentifier);
+		validator = new CrossPlatformValidator(GooglePlayTangle.Data(), AppleTangle.Data(), Application.identifier);
 		#endif
 
 		// Now we're ready to initialize Unity IAP.
