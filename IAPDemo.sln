@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2015
+# Visual Studio 2017
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IAPDemo.Plugins", "IAPDemo.Plugins.csproj", "{F59953D6-A38F-BDD5-2E93-6E31B1E6D75E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IAPDemo.Editor.Plugins", "IAPDemo.Editor.Plugins.csproj", "{4725B905-CB9C-19AB-655E-C293E14E8529}"
