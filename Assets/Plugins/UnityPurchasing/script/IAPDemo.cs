@@ -1,10 +1,12 @@
 #if UNITY_ANDROID || UNITY_IPHONE || UNITY_STANDALONE_OSX || UNITY_TVOS
 // You must obfuscate your secrets using Window > Unity IAP > Receipt Validation Obfuscator
 // before receipt validation will compile in this sample.
-#define RECEIPT_VALIDATION
+//#define RECEIPT_VALIDATION
 #endif
+//#define DELAY_CONFIRMATION // Returns PurchaseProcessingResult.Pending from ProcessPurchase, then calls ConfirmPendingPurchase after a delay
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -95,7 +97,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		for (int t = 0; t < m_Controller.products.all.Length; t++)
 		{
 			var item = m_Controller.products.all[t];
-			var description = string.Format("{0} - {1}", item.metadata.localizedTitle, item.metadata.localizedPriceString);
+			var description = string.Format("{0} | {1} => {2}", item.metadata.localizedTitle, item.metadata.localizedPriceString, item.metadata.localizedPrice);
 
 			// NOTE: my options list is created in InitUI
 			GetDropdown().options[t] = new Dropdown.OptionData(description);
@@ -124,9 +126,6 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 
 		m_LastReceipt = e.purchasedProduct.receipt;
 		m_PurchaseInProgress = false;
-
-		// Now that my purchase history has changed, update its UI
-		UpdateHistoryUI();
 
 		#if RECEIPT_VALIDATION
 		// Local validation is available for GooglePlay and Apple stores
@@ -194,8 +193,32 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		//     m_Controller.ConfirmPendingPurchase(Product) to complete handling
 		//     this purchase. Use to transactionally save purchases to a cloud
 		//     game service. 
+#if DELAY_CONFIRMATION
+		StartCoroutine(ConfirmPendingPurchaseAfterDelay(e.purchasedProduct));
+		return PurchaseProcessingResult.Pending;
+#else
+		UpdateHistoryUI();
 		return PurchaseProcessingResult.Complete;
+#endif
 	}
+
+#if DELAY_CONFIRMATION
+	private HashSet<string> m_PendingProducts = new HashSet<string>();
+
+	private IEnumerator ConfirmPendingPurchaseAfterDelay(Product p)
+	{
+		m_PendingProducts.Add(p.definition.id);
+		Debug.Log("Delaying confirmation of " + p.definition.id + " for 5 seconds.");
+		UpdateHistoryUI();
+
+		yield return new WaitForSeconds(5f);
+
+		Debug.Log("Confirming purchase of " + p.definition.id);
+		m_Controller.ConfirmPendingPurchase(p);
+		m_PendingProducts.Remove(p.definition.id);
+		UpdateHistoryUI();
+	}
+#endif
 
 	/// <summary>
 	/// This will be called is an attempted purchase fails.
@@ -273,7 +296,8 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 				{"100.gold.coins", SamsungApps.Name},
 				{"com.unity3d.unityiap.unityiapdemo.100goldcoins.az", AmazonApps.Name},
 				{"000000596581", TizenStore.Name},
-			    {"com.ee", MoolahAppStore.Name}
+			    {"com.ee", MoolahAppStore.Name},
+				{"webgl.iapdemo.coins", FacebookStore.Name}
 			});
 
 		builder.AddProduct("sword", ProductType.NonConsumable, new IDs
@@ -284,7 +308,8 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 				{"com.eight.bit.avenue.sword.1", WindowsStore.Name},
 				{"sword", SamsungApps.Name},
 				{"com.unity3d.unityiap.unityiapdemo.sword.az", AmazonApps.Name},
-				{"000000596583", TizenStore.Name}
+				{"000000596583", TizenStore.Name},
+				{"webgl.iapdemo.sword", FacebookStore.Name}
 			});
 
 		builder.AddProduct("subscription", ProductType.Subscription, new IDs
@@ -294,7 +319,8 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 				{"com.eight.bit.avenue.amorcam.subscription.3", GooglePlay.Name},
 				{"com.eight.bit.avenue.subscription.1", WindowsStore.Name},
 				{"subscription", SamsungApps.Name},
-				{"com.unity3d.unityiap.unityiapdemo.subscription.annually", AmazonApps.Name}
+				{"com.unity3d.unityiap.unityiapdemo.subscription.annually", AmazonApps.Name},
+				{"webgl.iapdemo.subscription", FacebookStore.Name}
 			});
 
 		// Write Amazon's JSON description of our products to storage when using Amazon's local sandbox.
@@ -318,7 +344,13 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 
 
 		#if RECEIPT_VALIDATION
-		validator = new CrossPlatformValidator(GooglePlayTangle.Data(), AppleTangle.Data(), Application.bundleIdentifier);
+		string appIdentifier;
+		#if UNITY_5_6_OR_NEWER
+		appIdentifier = Application.identifier;
+		#else
+		appIdentifier = Application.bundleIdentifier;
+		#endif
+		validator = new CrossPlatformValidator(GooglePlayTangle.Data(), AppleTangle.Data(), appIdentifier);
 		#endif
 
 		// Now we're ready to initialize Unity IAP.
@@ -520,14 +552,15 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		var itemText = "Item\n\n";
 		var countText = "Purchased\n\n";
 
-		for (int t = 0; t < m_Controller.products.all.Length; t++)
-		{
-			var item = m_Controller.products.all [t];
-
+		foreach (var item in m_Controller.products.all) {
 			// Collect history status report
-
 			itemText += "\n\n" + item.definition.id;
-			countText += "\n\n" + item.hasReceipt.ToString();
+			countText += "\n\n";
+#if DELAY_CONFIRMATION
+			if (m_PendingProducts.Contains(item.definition.id))
+				countText += "(Pending) ";
+#endif
+			countText += item.hasReceipt.ToString();
 		}
 
 		// Show history
