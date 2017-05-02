@@ -1,6 +1,6 @@
-## [1.11.0] - ????-??-??
+## [1.11.0] - 2017-05-01
 ### Added
-- FacebookStore - Facebook Gameroom support. Supported in Unity 5.6+ for WebGLPlayer and WindowsPlayer.
+- FacebookStore - Facebook Gameroom Payments Lite support. Available on Unity 5.6+ when building for Facebook Platform on Gameroom (Windows) and WebGL.
 - Apple platforms - Added experimental support for setting "simulatesAskToBuyInSandbox". Please let us know how this impacts ask-to-buy testability for you.
 ```csharp
 extensions.GetExtension<IAppleExtensions>().simulateAskToBuy = true;
@@ -10,6 +10,9 @@ extensions.GetExtension<IAppleExtensions>().simulateAskToBuy = true;
 // Set the applicationUsername to help Apple detect fraud
 extensions.GetExtension<IAppleExtensions>().SetApplicationUsername(hashedUsername);
 ```
+
+### Requirement
+- GooglePlay - "Android SDK API Level 24 (7.0)" (or higher) must now be installed. To upgrade, either perform the one-time step of setting the project's "Android Player Settings > Other Settings > Minimum API Level" to 24, building an APK, then resetting to the project's previous value. Or, run the `android` Android SDK Manager tool manually and install "Android 7.0 (API 24)". Addresses build error messages: "Unable to merge android manifests." and "Main manifest has \<uses-sdk android:targetSdkVersion='23'> but library uses targetSdkVersion='24'". Note the Minimum API Level support is unchanged; merely the installation of API 24 SDK is now required for Daydream VR.
 
 ### Fixed
 - GooglePlay Daydream VR - Uses decoration-free Activity for purchasing
