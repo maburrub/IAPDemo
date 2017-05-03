@@ -16,7 +16,9 @@ extensions.GetExtension<IAppleExtensions>().SetApplicationUsername(hashedUsernam
 
 ### Fixed
 - GooglePlay Daydream VR - Uses decoration-free Activity for purchasing
+- GooglePlay - Avoids sporadic price serialization exception
 - Apple App Stores - Improve handling of the situation where an attempt to finish a transaction fails (if the user is signed out of the store and cancels the sign in dialog, for example). The Apple store implementation will now remember that the transaction should be finished, and attempt to call finishTransaction again if the transaction is retrieved from the queue again. When this happens, the store will call OnPurchaseFailed with the reason "DuplicateTransaction"—this prevents a situation where a call to InitiatePurchase could result in no call to ProcessPurchase or OnPurchaseFailed.
+- Amazon - Fix for a crash when loading product metadata for subscription parent products
 
 ## [1.10.1] - 2017-03-29
 ### Fixed
