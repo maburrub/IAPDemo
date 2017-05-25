@@ -1,6 +1,6 @@
 ## [1.11.0] - 2017-05-01
 ### Added
-- FacebookStore - Facebook Gameroom Payments Lite support. Available on Unity 5.6+ when building for Facebook Platform on Gameroom (Windows) and WebGL.
+- FacebookStore - Facebook Gameroom Payments Lite support. Available on Unity 5.6+ when building for Facebook Platform on Gameroom (Windows) and WebGL. Preliminary documentation is available [here](https://docs.google.com/document/d/1FaYwKvdnMHxkh47YVuXx9dMbc6ZtLX53mtgyAIn6WfU/)
 - Apple platforms - Added experimental support for setting "simulatesAskToBuyInSandbox". Please let us know how this impacts ask-to-buy testability for you.
 ```csharp
 extensions.GetExtension<IAppleExtensions>().simulateAskToBuy = true;
