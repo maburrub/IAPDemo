@@ -1,3 +1,7 @@
+## [1.11.4] - 2017-06-21
+### Fixed
+- Apple platforms - Fix a blocking bug when building from Unity 5.3.
+
 ## [1.11.3] - 2017-06-20
 ### Fixed
 - Amazon - Purchase attempts for owned non-consumable products are now treated as successful purchases.
