@@ -135,6 +135,12 @@
  <Reference Include="UnityEditor.Facebook.Extensions">
  <HintPath>/Applications/Unity2017.1.0f3/PlaybackEngines/Facebook/UnityEditor.Facebook.Extensions.dll</HintPath>
  </Reference>
+ <Reference Include="ChannelPurchase">
+ <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityChannel/ChannelPurchase.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityStore">
+ <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityChannel/UnityStore.dll</HintPath>
+ </Reference>
  <Reference Include="Editor">
  <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityPurchasing/Bin/Editor.dll</HintPath>
  </Reference>
@@ -158,12 +164,6 @@
  </Reference>
  <Reference Include="winrt">
  <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityPurchasing/winrt/winrt.dll</HintPath>
- </Reference>
- <Reference Include="ChannelPurchase">
- <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityChannel/ChannelPurchase.dll</HintPath>
- </Reference>
- <Reference Include="UnityStore">
- <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityChannel/UnityStore.dll</HintPath>
  </Reference>
   </ItemGroup>
   <ItemGroup>
