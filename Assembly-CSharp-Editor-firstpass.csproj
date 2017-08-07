@@ -57,6 +57,7 @@
      <Compile Include="Assets\Plugins\UnityChannel\XiaomiSupport\Editor\XiaomiPackageNameExtension.cs" />
      <Compile Include="Assets\Plugins\UnityPurchasing\Editor\IAPButtonEditor.cs" />
      <Compile Include="Assets\Plugins\UnityPurchasing\Editor\UnityPurchasingEditor.cs" />
+     <None Include="Assets\Plugins\UnityPurchasing\script\link.xml" />
  <Reference Include="Facebook.Unity.Settings">
  <HintPath>/Users/mohammed/Projects/IAPDemo/Library/FacebookSDK/Facebook.Unity.Settings.dll</HintPath>
  </Reference>
@@ -123,11 +124,17 @@
  <Reference Include="UnityEditor.iOS.Extensions">
  <HintPath>/Applications/Unity2017.1.0f3/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.dll</HintPath>
  </Reference>
+ <Reference Include="UnityEditor.WebGL.Extensions">
+ <HintPath>/Applications/Unity2017.1.0f3/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll</HintPath>
+ </Reference>
  <Reference Include="UnityEditor.WindowsStandalone.Extensions">
  <HintPath>/Applications/Unity2017.1.0f3/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.OSXStandalone.Extensions">
  <HintPath>/Applications/Unity2017.1.0f3/Unity.app/Contents/PlaybackEngines/MacStandaloneSupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.Facebook.Extensions">
+ <HintPath>/Applications/Unity2017.1.0f3/PlaybackEngines/Facebook/UnityEditor.Facebook.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="ChannelPurchase">
  <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityChannel/ChannelPurchase.dll</HintPath>

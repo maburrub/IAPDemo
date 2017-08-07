@@ -57,8 +57,10 @@
      <Compile Include="Assets\Plugins\UnityPurchasing\script\ComboBox.cs" />
      <Compile Include="Assets\Plugins\UnityPurchasing\script\Demo\DemoInventory.cs" />
      <Compile Include="Assets\Plugins\UnityPurchasing\script\IAPButton.cs" />
+     <Compile Include="Assets\Plugins\UnityPurchasing\script\IAPConfigurationHelper.cs" />
      <Compile Include="Assets\Plugins\UnityPurchasing\script\IAPDemo.cs" />
      <Compile Include="Assets\Plugins\UnityPurchasing\script\PurchasingCheck.cs" />
+     <None Include="Assets\Plugins\UnityPurchasing\script\link.xml" />
  <Reference Include="Facebook.Unity.Settings">
  <HintPath>/Users/mohammed/Projects/IAPDemo/Library/FacebookSDK/Facebook.Unity.Settings.dll</HintPath>
  </Reference>

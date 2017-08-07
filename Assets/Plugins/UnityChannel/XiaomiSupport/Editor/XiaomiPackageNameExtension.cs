@@ -1,10 +1,15 @@
-﻿#if UNITY_5_6_OR_NEWER && !UNITY_5_6_0
+﻿// #define ENABLE_XIAOMIPACKAGENAMEEXTENSION
+#if ENABLE_XIAOMIPACKAGENAMEEXTENSION
+#if UNITY_5_6_OR_NEWER && !UNITY_5_6_0
 using UnityEditor;
 using UnityEngine;
 using UnityEditor.Build;
 
 namespace AppStoresSupport
 {
+    /// <summary>
+    /// Automatic generation of Xiaomi-compatible package identifier during Android build.
+    /// </summary>
     public class XiaomiPackageNameExtension : IPreprocessBuild, IPostprocessBuild
     {
         public int callbackOrder
@@ -40,3 +45,4 @@ namespace AppStoresSupport
     }
 }
 #endif
+#endif // ENABLE_XIAOMIPACKAGENAMEEXTENSION

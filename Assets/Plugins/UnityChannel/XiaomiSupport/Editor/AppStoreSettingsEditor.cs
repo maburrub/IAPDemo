@@ -21,6 +21,7 @@ namespace AppStoresSupport
 		private string callbackUrl_in_memory;
 		private string appSecret_in_memory;
 		private bool appSecret_hidden = true;
+		private bool ownerAuthed = false;
 
 		private string callbackUrl_last;
 		private string appId_last;
@@ -120,24 +121,24 @@ namespace AppStoresSupport
             EditorGUILayout.LabelField(new GUIContent("Unity Client Settings"));
             bool clientNotExists = String.IsNullOrEmpty(unityClientID.stringValue);
 			string buttonLableString = "Generate Unity Client";
+			string target = STEP_GET_CLIENT;
 			if (!clientNotExists) {
 				if (String.IsNullOrEmpty (clientSecret_in_memory)  || !AppStoreOnboardApi.loaded) {
 					buttonLableString = "Load Unity Client";
 				} else {
 					buttonLableString = "Update Client Secret";
+					target = STEP_UPDATE_CLIENT_SECRET;
 				}
 			}
             if (GUILayout.Button(buttonLableString, GUILayout.Width(AppStoreStyles.kUnityClientIDButtonWidth)))
             {
 				isOperationRunning = true;
 				Debug.Log (buttonLableString + "...");
-               	if (clientNotExists) {
-					callApiAsync (STEP_GET_CLIENT);
-				} else {
+				if (target == STEP_UPDATE_CLIENT_SECRET) {
 					clientSecret_in_memory = null;
-					callApiAsync (STEP_UPDATE_CLIENT_SECRET);
 				}
-
+				callApiAsync (target);
+               	
                 serializedObject.ApplyModifiedProperties();
 				this.Repaint ();
                 AssetDatabase.SaveAssets();
@@ -384,6 +385,7 @@ namespace AppStoresSupport
 			if (request != null && request.isDone) {
 				if (request.error != null) {
 					Debug.LogError (request.error);
+					isOperationRunning = false;
 				} else {
 					if (request.downloadHandler.text.Contains(AppStoreOnboardApi.tokenExpiredInfo)) {
 						UnityWebRequest newRequest = AppStoreOnboardApi.RefreshToken();
@@ -431,6 +433,7 @@ namespace AppStoresSupport
 							resp = JsonUtility.FromJson<OrgRoleResponse> (request.downloadHandler.text);
 							List<string> roles = ((OrgRoleResponse)resp).roles;
 							if (roles.Contains ("owner")) {
+								ownerAuthed = true;
 								if (reqStruct.targetStep == STEP_GET_CLIENT) {
 									UnityWebRequest newRequest = AppStoreOnboardApi.GetUnityClientInfo (Application.cloudProjectId);
 									UnityClientResponseWrapper clientRespWrapper = new UnityClientResponseWrapper ();
@@ -465,8 +468,23 @@ namespace AppStoresSupport
 									newReqStruct.targetStep = reqStruct.targetStep;
 									requestQueue.Enqueue (newReqStruct);
 								}
+							} else if (roles.Contains ("user") || roles.Contains ("manager")) {
+								ownerAuthed = false;
+								if (reqStruct.targetStep == STEP_GET_CLIENT) {
+									UnityWebRequest newRequest = AppStoreOnboardApi.GetUnityClientInfo (Application.cloudProjectId);
+									UnityClientResponseWrapper clientRespWrapper = new UnityClientResponseWrapper ();
+									ReqStruct newReqStruct = new ReqStruct ();
+									newReqStruct.request = newRequest;
+									newReqStruct.resp = clientRespWrapper;
+									newReqStruct.targetStep = reqStruct.targetStep;
+									requestQueue.Enqueue (newReqStruct);
+								} else {
+									Debug.LogError ("Permision denied.");
+									isOperationRunning = false;
+								}
 							} else {
 								Debug.LogError ("Permision denied.");
+								isOperationRunning = false;
 							}
 						} else if (resp.GetType () == typeof(UnityClientResponseWrapper)) {
 							string raw = "{ \"array\": " + request.downloadHandler.text + "}";
@@ -499,20 +517,25 @@ namespace AppStoresSupport
 								AssetDatabase.SaveAssets();
 							} else {
 								// no client found, generate one.
-								UnityClientInfo unityClientInfo = new UnityClientInfo();
-								string callbackUrl = callbackUrl_in_memory;
-								// read xiaomi from user input
-								XiaomiSettings xiaomi = new XiaomiSettings();
-								xiaomi.appId = xiaomiAppID.stringValue;
-								xiaomi.appKey = xiaomiAppKey.stringValue;
-								xiaomi.appSecret = appSecret_in_memory;
-								UnityWebRequest newRequest = AppStoreOnboardApi.GenerateUnityClient(Application.cloudProjectId, unityClientInfo, xiaomi, callbackUrl);
-								UnityClientResponse clientResp = new UnityClientResponse ();
-								ReqStruct newReqStruct = new ReqStruct ();
-								newReqStruct.request = newRequest;
-								newReqStruct.resp = clientResp;
-								newReqStruct.targetStep = reqStruct.targetStep;
-								requestQueue.Enqueue (newReqStruct);
+								if (ownerAuthed) {
+									UnityClientInfo unityClientInfo = new UnityClientInfo ();
+									string callbackUrl = callbackUrl_in_memory;
+									// read xiaomi from user input
+									XiaomiSettings xiaomi = new XiaomiSettings ();
+									xiaomi.appId = xiaomiAppID.stringValue;
+									xiaomi.appKey = xiaomiAppKey.stringValue;
+									xiaomi.appSecret = appSecret_in_memory;
+									UnityWebRequest newRequest = AppStoreOnboardApi.GenerateUnityClient (Application.cloudProjectId, unityClientInfo, xiaomi, callbackUrl);
+									UnityClientResponse clientResp = new UnityClientResponse ();
+									ReqStruct newReqStruct = new ReqStruct ();
+									newReqStruct.request = newRequest;
+									newReqStruct.resp = clientResp;
+									newReqStruct.targetStep = reqStruct.targetStep;
+									requestQueue.Enqueue (newReqStruct);
+								} else {
+									Debug.LogError ("Permision denied.");
+									isOperationRunning = false;
+								}
 							}
 						} else if (resp.GetType () == typeof(UnityClientResponse)) {
 							resp = JsonUtility.FromJson<UnityClientResponse> (request.downloadHandler.text);
