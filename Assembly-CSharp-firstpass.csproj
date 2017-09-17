@@ -57,8 +57,10 @@
      <Compile Include="Assets\Plugins\UnityPurchasing\script\ComboBox.cs" />
      <Compile Include="Assets\Plugins\UnityPurchasing\script\Demo\DemoInventory.cs" />
      <Compile Include="Assets\Plugins\UnityPurchasing\script\IAPButton.cs" />
+     <Compile Include="Assets\Plugins\UnityPurchasing\script\IAPConfigurationHelper.cs" />
      <Compile Include="Assets\Plugins\UnityPurchasing\script\IAPDemo.cs" />
      <Compile Include="Assets\Plugins\UnityPurchasing\script\PurchasingCheck.cs" />
+     <None Include="Assets\Plugins\UnityPurchasing\script\link.xml" />
  <Reference Include="Facebook.Unity.Settings">
  <HintPath>/Users/mohammed/Projects/IAPDemo/Library/FacebookSDK/Facebook.Unity.Settings.dll</HintPath>
  </Reference>
@@ -86,6 +88,12 @@
  <Reference Include="UnityEngine.Purchasing">
  <HintPath>/Applications/Unity2017.1.0f3/Unity.app/Contents/UnityExtensions/Unity/UnityPurchasing/UnityEngine.Purchasing.dll</HintPath>
  </Reference>
+ <Reference Include="ChannelPurchase">
+ <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityChannel/ChannelPurchase.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityStore">
+ <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityChannel/UnityStore.dll</HintPath>
+ </Reference>
  <Reference Include="Editor">
  <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityPurchasing/Bin/Editor.dll</HintPath>
  </Reference>
@@ -109,12 +117,6 @@
  </Reference>
  <Reference Include="winrt">
  <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityPurchasing/winrt/winrt.dll</HintPath>
- </Reference>
- <Reference Include="ChannelPurchase">
- <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityChannel/ChannelPurchase.dll</HintPath>
- </Reference>
- <Reference Include="UnityStore">
- <HintPath>/Users/mohammed/Projects/IAPDemo/Assets/Plugins/UnityChannel/UnityStore.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
