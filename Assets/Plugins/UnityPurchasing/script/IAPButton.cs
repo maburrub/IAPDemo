@@ -101,10 +101,10 @@ namespace UnityEngine.Purchasing
 					IAPButtonStoreManager.Instance.ExtensionProvider.GetExtension<IMicrosoftExtensions>().RestoreTransactions();
 				} else if (Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.OSXPlayer || Application.platform == RuntimePlatform.tvOS) {
 					IAPButtonStoreManager.Instance.ExtensionProvider.GetExtension<IAppleExtensions>().RestoreTransactions(OnTransactionsRestored);
-				} else if (Application.platform == RuntimePlatform.Android && StandardPurchasingModule.Instance().androidStore == AndroidStore.SamsungApps) {
-					IAPButtonStoreManager.Instance.ExtensionProvider.GetExtension<ISamsungAppsExtensions>().RestoreTransactions(OnTransactionsRestored); 
-				} else if (Application.platform == RuntimePlatform.Android && StandardPurchasingModule.Instance().androidStore == AndroidStore.CloudMoolah) {
-					IAPButtonStoreManager.Instance.ExtensionProvider.GetExtension<IMoolahExtension>().RestoreTransactionID((restoreTransactionIDState) => { 
+				} else if (Application.platform == RuntimePlatform.Android && StandardPurchasingModule.Instance().appStore == AppStore.SamsungApps) {
+					IAPButtonStoreManager.Instance.ExtensionProvider.GetExtension<ISamsungAppsExtensions>().RestoreTransactions(OnTransactionsRestored);
+				} else if (Application.platform == RuntimePlatform.Android && StandardPurchasingModule.Instance().appStore == AppStore.CloudMoolah) {
+					IAPButtonStoreManager.Instance.ExtensionProvider.GetExtension<IMoolahExtension>().RestoreTransactionID((restoreTransactionIDState) => {
 						OnTransactionsRestored(restoreTransactionIDState != RestoreTransactionIDState.RestoreFailed && restoreTransactionIDState != RestoreTransactionIDState.NotKnown);
 					});
 				} else {
@@ -163,7 +163,8 @@ namespace UnityEngine.Purchasing
 			private static IAPButtonStoreManager instance = new IAPButtonStoreManager();
 			private ProductCatalog catalog;
 			private List<IAPButton> activeButtons = new List<IAPButton>();
-			
+            private IAPListener m_Listener;
+
 			protected IStoreController controller;
 			protected IExtensionProvider extensions;
 
@@ -175,17 +176,9 @@ namespace UnityEngine.Purchasing
 				module.useFakeStoreUIMode = FakeStoreUIMode.StandardUser;
 
 				ConfigurationBuilder builder = ConfigurationBuilder.Instance(module);
-				foreach (var product in catalog.allProducts) {
-					if (product.allStoreIDs.Count > 0) {
-						var ids = new IDs();
-						foreach (var storeID in product.allStoreIDs) {
-							ids.Add(storeID.id, storeID.store);
-						}
-						builder.AddProduct(product.id, product.type, ids);
-					} else {
-						builder.AddProduct(product.id, product.type);
-					}
-				}
+
+				IAPConfigurationHelper.PopulateConfigurationBuilder(ref builder, catalog);
+
 				UnityPurchasing.Initialize (this, builder);
 			}
 
@@ -219,7 +212,7 @@ namespace UnityEngine.Purchasing
 
 			public Product GetProduct(string productID)
 			{
-				if (controller != null) {
+				if (controller != null && controller.products != null && !string.IsNullOrEmpty(productID)) {
 					return controller.products.WithID(productID);
 				}
 				return null;
@@ -235,10 +228,29 @@ namespace UnityEngine.Purchasing
 				activeButtons.Remove(button);
 			}
 
+            public void AddListener(IAPListener listener)
+            {
+                if (m_Listener != null)
+                    Debug.LogWarning("There is more than one active IAPListener. Only the most recent IAPListener will receive purchase events.");
+                m_Listener = listener;
+            }
+
+            public void RemoveListener(IAPListener listener)
+            {
+                if (m_Listener == listener)
+                    m_Listener = null;
+            }
+
 			public void InitiatePurchase(string productID)
 			{
 				if (controller == null) {
 					Debug.LogError("Purchase failed because Purchasing was not initialized correctly");
+
+					foreach (var button in activeButtons) {
+						if (button.productId == productID) {
+							button.OnPurchaseFailed(null, Purchasing.PurchaseFailureReason.PurchasingUnavailable);
+						}
+					}
 					return;
 				}
 
@@ -267,16 +279,30 @@ namespace UnityEngine.Purchasing
 						return button.ProcessPurchase(e);
 					}
 				}
-				return PurchaseProcessingResult.Complete; // TODO: Maybe this shouldn't return complete
+
+                if (m_Listener != null) {
+                    return m_Listener.ProcessPurchase(e);
+                } else {
+				    Debug.LogWarning("Purchase not correctly processed for product \"" + e.purchasedProduct.definition.id + "\". Add an active IAPButton to process this purchase, or add an IAPListener to receive any unhandled purchase events.");
+				    return PurchaseProcessingResult.Pending;
+                }
 			}
 
 			public void OnPurchaseFailed (Product product, PurchaseFailureReason reason)
-			{ 
+			{
 				foreach (var button in activeButtons) {
 					if (button.productId == product.definition.id) {
 						button.OnPurchaseFailed(product, reason);
+						return;
 					}
-				} 
+				}
+
+                if (m_Listener != null) {
+                    m_Listener.OnPurchaseFailed(product, reason);
+                    return;
+                } else {
+				    Debug.LogWarning("Failed purchase not correctly handled for product \"" + product.definition.id + "\". Add an active IAPButton to handle this failure, or add an IAPListener to receive any unhandled purchase failures.");
+                }
 			}
 		}
 	}
