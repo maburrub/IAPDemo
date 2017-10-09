@@ -1,3 +1,9 @@
+## [1.14.1] - 2017-10-02
+### Fixed
+- Apple Application Loader product catalog exporter now correctly exports tab-separated values for catalogs containing more than one product
+- JSONSerializer - Unity 5.3 build-time regression - missing "type" field on ProductDescription. Field is available in 5.4 and higher.
+- FakeStore - uses Product.storeSpecificId instead of Product.id when reporting purchase failures
+
 ## [1.14.0] - 2017-09-18
 ### Added
 - Codeless IAP - Added an `IAPListener` Component to extend Codeless IAP functionality. Normally with Codeless IAP, purchase events are dispatched to an `IAPButton` UI Component that is associated with a particular product. The `IAPListener` does not show any UI. It will receive purchase events that do not correspond to any active `IAPButton`.
@@ -9,7 +15,7 @@
 - Xiaomi - Support multiple simultaneous calls to IUnityChannelExtensions.ConfirmPurchase and IUnityChannelExtensions.ValidateReceipt.
 
 ### Changed
-- CloudMoolah - Upgraded to 2017-07-31 SDK. Compatible with the [2017 Cloud Moolah developer portal](https://dev.cloudmoolah.com/). Add `IMoolahConfiguration.notificationURL`. Removed deprecated `IMoolahExtensions.Login`, `IMoolahExtensions.FastRegister`, `IMoolahExtensions.RequestPayOut`.
+- CloudMoolah - Upgraded to 2017-07-31 SDK. Compatible with the [2017 Cloud Moolah developer portal](https://dev.cloudmoolah.com/). Add `IMoolahConfiguration.notificationURL`. Removed deprecated `IMoolahExtensions.Login`, `IMoolahExtensions.FastRegister`, `IMoolahExtensions.RequestPayOut`. [Preliminary updated documentation](https://docs.google.com/document/d/1g-wI2gOc208tQCEPOxOrC0rYgZA0_S6qDUGOYyhmmYw) is available.
 - Receipt Validation Obfuscator - Improved UI for collecting Google Play License Keys for receipt validation.
 - Xiaomi - Removed deprecated MiProductCatalog.prop file generation in favor of MiGameProductCatalog.prop for Xiaomi Mi Game Pay Android targets.
 - IAPDemo - Guard PurchaseFailureReason.DuplicateTransaction enum usage to be on Unity 5.6 and higher.
