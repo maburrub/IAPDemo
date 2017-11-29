@@ -418,7 +418,95 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 				{"webgl.iapdemo.subscription", FacebookStore.Name}
         });
 
-        // Write Amazon's JSON description of our products to storage when using Amazon's local sandbox.
+ 
+		builder.AddProduct("test_prod_01", ProductType.Consumable, new IDs
+			{
+				{"test_prod_01", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_02", ProductType.Consumable, new IDs
+			{
+				{"test_prod_02", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_03", ProductType.Consumable, new IDs
+			{
+				{"test_prod_03", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_04", ProductType.Consumable, new IDs
+			{
+				{"test_prod_04", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_05", ProductType.Consumable, new IDs
+			{
+				{"test_prod_05", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_06", ProductType.Consumable, new IDs
+			{
+				{"test_prod_06", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_07", ProductType.Consumable, new IDs
+			{
+				{"test_prod_07", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_08", ProductType.Consumable, new IDs
+			{
+				{"test_prod_08", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_09", ProductType.Consumable, new IDs
+			{
+				{"test_prod_09", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_10", ProductType.Consumable, new IDs
+			{
+				{"test_prod_10", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_11", ProductType.Consumable, new IDs
+			{
+				{"test_prod_11", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_12", ProductType.Consumable, new IDs
+			{
+				{"test_prod_12", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_13", ProductType.Consumable, new IDs
+			{
+				{"test_prod_13", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_14", ProductType.Consumable, new IDs
+			{
+				{"test_prod_14", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_15", ProductType.Consumable, new IDs
+			{
+				{"test_prod_15", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_16", ProductType.Consumable, new IDs
+			{
+				{"test_prod_16", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_17", ProductType.Consumable, new IDs
+			{
+				{"test_prod_17", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_18", ProductType.Consumable, new IDs
+			{
+				{"test_prod_18", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_19", ProductType.Consumable, new IDs
+			{
+				{"test_prod_19", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_20", ProductType.Consumable, new IDs
+			{
+				{"test_prod_20", FacebookStore.Name}
+			});
+		builder.AddProduct("test_prod_21", ProductType.Consumable, new IDs
+			{
+				{"test_prod_21", FacebookStore.Name}
+			});
+		
+
+
+		// Write Amazon's JSON description of our products to storage when using Amazon's local sandbox.
         // This should be removed from a production build.
         builder.Configure<IAmazonConfiguration>().WriteSandboxJSON(builder.products);
 
