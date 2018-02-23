@@ -1,14 +1,23 @@
+## [1.17.0] - 2018-02-21
+### Added
+- Unity IAP Promo - [Beta] Supports new Unity Ads feature to advertise IAPs inside advert placements.
+
+### Changed
+- Codeless IAP - Allow developers to use both IAPButton and IAPListener simultaneously. Broadcasts ProcessPurchase and OnPurchaseFailed to all productId-matching IAPButtons and to all IAPListeners. Allow multiple IAPListeners to be set using the AddListener method. Note: This change may increase the chance one rewards users multiple times for the same purchase.
+
 ## [1.16.0] - 2018-01-25
-## Changed
+### Changed
 - GooglePlay - Gradle builds will 'just work'. Internalized Proguard warning-suppression configurations. (Moved `proguard-user.txt.OPTIONAL.txt` into GooglePlay.aar, effectively.)
 - Replaced Apple Application Loader product catalog exporter with Apple XML Delivery product catalog exporter, because submitting IAP via Application Loader is now deprecated
 
 ### Added
 - Security - Adds the `IAppleExtensions.GetTransactionReceiptForProduct` method that returns the most recent iOS 6 style transaction receipt for a given product. This is used to validate Ask-to-buy purchases. [Preliminary documentation](https://docs.google.com/document/d/1YM0Nyy-kTEM2YGpOxVj20kUBtyyNKndaXWslV0RF_V8) is available.
 - Apple - Adds an optional callback, `IAppleConfiguration.SetApplePromotionalPurchaseInterceptorCallback`, that intercepts Apple Promotional purchases in iOS and tvOS. Developers who implement the callback should call `IAppleExtensions.ContinuePromotionalPurchases` to resume the purchase flow. [Preliminary documentation](https://docs.google.com/document/d/1wQDRYoQnTYoDWw4G64V-V6EZbczpkq0moRf27GKeUuY) is available.
+- Xiaomi - Add support for retrieving developer payload. [Preliminary documentation](https://docs.google.com/document/d/1V0oCuCbb7ritK8BTAMQjgMmDTrsascR2MDoUPXPAUnw) is available.
 
 ### Fixed
 - Removed Debug log from UnityIAP StandardPurchasingModule
+- Xiaomi - Remove unnecessary Android WRITE_EXTERNAL_STORAGE permission.
 
 ## [1.15.0] - 2017-11-13
 ### Added
